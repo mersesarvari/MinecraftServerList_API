@@ -31,7 +31,7 @@ namespace MSLServer.Data.DBSeed
                     Publisherid="640db982-f8f1-4df1-a405-05103025bb03",
                 },
                 new Server() {
-                    Id=" 81f58175-8e09-466c-8196-0dcb144de1a7",
+                    Id="81f58175-8e09-466c-8196-0dcb144de1a7",
                     Ip="sm.opblocks.com",
                     Port="25565",
                     Publisherid="640db982-f8f1-4df1-a405-05103025bb03",

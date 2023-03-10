@@ -1,4 +1,5 @@
-﻿using MineStatLib;
+﻿using Microsoft.AspNetCore.Hosting.Server;
+using MineStatLib;
 using MSLServer.Data;
 using MSLServer.Models;
 
@@ -14,7 +15,8 @@ namespace MSLServer.Logic
         }
         public IList<Server> GetAll()
         {
-            return context.Servers.ToList();
+            //SetServerListInformation(context.Servers.ToList());
+            return context.Servers.Where(x=>x.Status==true).ToList();
         }
         public Server GetById(string id)
         {
@@ -63,7 +65,7 @@ namespace MSLServer.Logic
             return context.Servers.Where(x => x.CurrentPlayers >= minplayers).ToList();
         }
 
-        public void GetServerInformation(string ip, string port)
+        public void CheckServerStatus(string ip, string port)
         {
             var current = GetByIp(ip);
             MineStat ms = new MineStat(ip, ushort.Parse(port), 2, SlpProtocol.Json);
@@ -81,14 +83,23 @@ namespace MSLServer.Logic
             context.SaveChanges();
         }
 
-        public void SetServerListInformation(IList<Server> servers)
+        public void CheckSpecificServersStatus(IList<Server> servers)
         {
             if (servers.Count() <= 20)
             {
                 for (int i = 0; i < servers.Count(); i++)
                 {
-                    GetServerInformation(servers[i].Ip, servers[i].Port);
+                    CheckServerStatus(servers[i].Ip, servers[i].Port);
                 }
+            }
+        }
+
+        public void CheckAllServerStatus()
+        {
+            var servers = GetAll();
+            for (int i = 0; i < servers.Count(); i++)
+            {
+                CheckServerStatus(servers[i].Ip, servers[i].Port);
             }
         }
     }

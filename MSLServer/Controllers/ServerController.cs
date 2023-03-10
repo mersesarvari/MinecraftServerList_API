@@ -36,7 +36,7 @@ public class ServerController : ControllerBase
     public void Post(string ip, string port, string ownerid)
     {
         serverRepository.Insert(ip, port, ownerid);
-        serverRepository.GetServerInformation(ip, port);
+        serverRepository.CheckServerStatus(ip, port);
     }
 
     [Route("/uploadthumbnail")]
@@ -116,7 +116,7 @@ public class ServerController : ControllerBase
     public IList<Server> ChectServerStatus()
     {
         var server = serverRepository.GetAll();
-        serverRepository.SetServerListInformation(server);
+        serverRepository.CheckSpecificServersStatus(server);
         return server;
     }
 }

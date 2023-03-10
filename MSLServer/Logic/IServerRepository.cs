@@ -14,8 +14,9 @@ namespace MSLServer.Logic
         void Update(Server obj);
         void Delete(string id);
 
-        public void SetServerListInformation(IList<Server> servers);
-        public void GetServerInformation(string ip, string port);
+        public void CheckAllServerStatus();
+        public void CheckSpecificServersStatus(IList<Server> servers);
+        public void CheckServerStatus(string ip, string port);
 
 
     }

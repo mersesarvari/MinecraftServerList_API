@@ -12,8 +12,8 @@ namespace MSLServer.Models
         public string Id { get; set; }
         public string Registration { get; set; }
 
-        [NotMapped]
         public string Publisherid { get; set; }
+        public string Servername { get; set; }
         public string Ip { get; set; }
         public string Port { get; set; }
         public bool Status { get; set; }

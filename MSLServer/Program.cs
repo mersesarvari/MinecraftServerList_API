@@ -22,6 +22,7 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(
     }
 ));
 
+
 builder.Services.AddControllers();
 
 // Adding background worker services
@@ -43,15 +44,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors();
+
 app.UseRouting();
 app.UseStaticFiles();
-app.UseAuthorization();
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-    endpoints.MapHub<SignalRHub>("/hub");
-});
+app.UseCors();
 
 app.MapControllers();
 

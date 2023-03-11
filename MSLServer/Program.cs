@@ -8,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IServerRepository, ServerRepository>();
-builder.Services.AddTransient<IServerThumbnailRepository, ServerThumbnailRepository>(); 
+builder.Services.AddTransient<IServerThumbnailRepository, ServerThumbnailRepository>();
+builder.Services.AddTransient<IServerLogoRepository, ServerLogoRepository>();
 builder.Services.AddTransient<ServerListDBContext, ServerListDBContext>();
 
 builder.Services.AddSignalR();

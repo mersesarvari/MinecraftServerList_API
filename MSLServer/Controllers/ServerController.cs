@@ -11,14 +11,16 @@ public class ServerController : ControllerBase
 {
     private IServerRepository serverRepository;
     private IServerThumbnailRepository thumbnailRepository;
+    private IServerLogoRepository logoRepository;
 
     private readonly ILogger<ServerController> _logger;
 
-    public ServerController(ILogger<ServerController> logger, IServerRepository serverRepository, IServerThumbnailRepository thumbnailRepository)
+    public ServerController(ILogger<ServerController> logger, IServerRepository serverRepository, IServerThumbnailRepository thumbnailRepository, IServerLogoRepository logoRepository)
     {
         _logger = logger;
         this.serverRepository = serverRepository;
         this.thumbnailRepository = thumbnailRepository;
+        this.logoRepository = logoRepository;
     }
 
     [HttpGet(Name = "GetServerController")]
@@ -26,7 +28,6 @@ public class ServerController : ControllerBase
     {
         return serverRepository.GetAll();
     }
-
 
     [HttpGet("{id}")]
     public Server Get(string id)
@@ -42,11 +43,11 @@ public class ServerController : ControllerBase
 
     [Route("/uploadthumbnail")]
     [HttpPost]
-    public IActionResult PostImage(IFormFile _file, string serverid)
+    public IActionResult PostThumbnail(IFormFile _file, string serverid)
     {
         try
         {
-            string filePath = Path.Combine(Resource.fileDirectory, serverid + Path.GetExtension(_file.FileName));
+            string filePath = Path.Combine(Resource.thumbnailDirectory, serverid + Path.GetExtension(_file.FileName));
             using (Stream fileStream = new FileStream(filePath, FileMode.Create))
             {
                 _file.CopyToAsync(fileStream);
@@ -64,17 +65,62 @@ public class ServerController : ControllerBase
         }
     }
 
+    [Route("/uploadlogo")]
+    [HttpPost]
+    public IActionResult PostLogo(IFormFile _file, string serverid)
+    {
+        try
+        {
+            string filePath = Path.Combine(Resource.logoDirectory, serverid + Path.GetExtension(_file.FileName));
+            using (Stream fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                _file.CopyToAsync(fileStream);
+                var extension = Path.GetExtension(filePath);
+                var filename = serverid + extension;
+                logoRepository.Create(new ServerLogo() { Name = serverid, FullName = filename, Extension = extension, ServerId = serverid });
+            }
+
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+
+            return BadRequest(ex.Message);
+        }
+    }
+
     [Route("/deletethumbnail")]
     [HttpDelete]
-    public IActionResult DeleteImage(string serverid)
+    public IActionResult DeleteThumbnail(string serverid)
     {
         try
         {
             var currentfile = thumbnailRepository.ReadByServerId(serverid);
-            if (System.IO.File.Exists(Resource.fileDirectory + currentfile.FullName))
+            if (System.IO.File.Exists(Resource.thumbnailDirectory + currentfile.FullName))
             {
-                System.IO.File.Delete(Resource.fileDirectory + currentfile.FullName);
+                System.IO.File.Delete(Resource.thumbnailDirectory + currentfile.FullName);
                 thumbnailRepository.Delete(currentfile.Name);
+            }
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [Route("/deletelogo")]
+    [HttpDelete]
+    public IActionResult Deletelogo(string serverid)
+    {
+        try
+        {
+            var currentfile = logoRepository.ReadByServerId(serverid);
+            if (System.IO.File.Exists(Resource.logoDirectory + currentfile.FullName))
+            {
+                System.IO.File.Delete(Resource.logoDirectory + currentfile.FullName);
+                logoRepository.Delete(currentfile.Name);
             }
             return Ok();
         }
@@ -99,6 +145,22 @@ public class ServerController : ControllerBase
             throw new Exception(ex.Message);
         }
     }
+
+    [Route("/getlogo")]
+    [HttpGet]
+    public IList<ServerLogo> GetLogo()
+    {
+        try
+        {
+            return logoRepository.ReadAll();
+        }
+        catch (Exception ex)
+        {
+
+            throw new Exception(ex.Message);
+        }
+    }
+
     [HttpDelete(Name = "DeleteServer")]
     public void Delete(string id)
     {

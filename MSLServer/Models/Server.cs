@@ -11,7 +11,6 @@ namespace MSLServer.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
         public string Registration { get; set; }
-
         public string Publisherid { get; set; }
         public string Servername { get; set; }
         public string Ip { get; set; }
@@ -20,21 +19,35 @@ namespace MSLServer.Models
         public int CurrentPlayers { get; set; }
         public int MaxPlayer { get; set; }
         public string ServerVersion { get; set; }
+        public string ThumbnailPath { get; set; }
+        public string LogoPath { get; set; }
         //public string Gamemode { get; set; }
         //public string Modt { get; set; }
         //public long Latency { get; set; }
 
-        public string ThumbnailPath { get; set; }
+
 
         public Server()
         {
-            if (Id == "" || Id == null)
-            {
-                Id = Guid.NewGuid().ToString();
-            }
-            ThumbnailPath = string.Empty;
+            Id = Guid.NewGuid().ToString();
+            Servername = string.Empty;
             ServerVersion = string.Empty;
+
+            
             Registration = DateTime.Now.ToString();
+            ThumbnailPath = this.Id + ".mp4";
+            LogoPath = this.Id + ".webp";
+        }
+        public Server(string id)
+        {
+            this.Id = id;
+            Servername = string.Empty;
+            ServerVersion = string.Empty;
+
+
+            Registration = DateTime.Now.ToString();
+            ThumbnailPath = this.Id + ".mp4";
+            LogoPath = this.Id + ".webp";
         }
     }
 }

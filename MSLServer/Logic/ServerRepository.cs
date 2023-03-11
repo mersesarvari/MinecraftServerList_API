@@ -16,7 +16,7 @@ namespace MSLServer.Logic
         public IList<Server> GetAll()
         {
             //SetServerListInformation(context.Servers.ToList());
-            return context.Servers.Where(x=>x.Status==true).ToList();
+            return context.Servers.ToList();
         }
         public Server GetById(string id)
         {

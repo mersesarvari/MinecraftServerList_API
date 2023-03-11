@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace MSLServer.Models
 {
-    [Table("ServerThumbnail")]
-    public class ServerThumbnail
+    [Table("ServerLogo")]
+    public class ServerLogo
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -24,7 +24,7 @@ namespace MSLServer.Models
 
         public string ServerId { get; set; }
 
-        public ServerThumbnail()
+        public ServerLogo()
         {
             Id = Guid.NewGuid().ToString();
         }

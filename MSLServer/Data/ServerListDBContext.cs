@@ -13,6 +13,7 @@ namespace MSLServer.Data
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Server> Servers { get; set; }
         public virtual DbSet<ServerThumbnail> ServerThumbnails { get; set; }
+        public virtual DbSet<ServerLogo> ServerLogos { get; set; }
         #endregion
         public ServerListDBContext()
         {
@@ -35,16 +36,6 @@ namespace MSLServer.Data
 
         protected override void OnModelCreating(ModelBuilder mb)
         {
-            //mb.Entity<User>().HasIndex(X => X.Email).IsUnique();
-
-            //// DeleteBehavior.NoAction mindenhova
-            ////mb.Entity<Server>(entity =>
-            ////{
-            ////    entity.HasOne(x => x.User)
-            ////        .WithMany(y => y.Servers)
-            ////        .HasForeignKey(x => x.UserID)
-            ////        .OnDelete(DeleteBehavior.Restrict);
-            ////});
             UserDBSeed.LoadData(mb);
             ServerDBSeed.LoadData(mb);
         }

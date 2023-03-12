@@ -19,21 +19,47 @@ public class UserController : ControllerBase
     }
 
     [HttpGet(Name = "GetUserController")]
-    public IList<User> GetAll()
+    public async Task<IList<User>> GetAll()
     {
-        return repository.GetAll();
+        try
+        {
+            return await repository.GetAll();
+        }
+        catch (Exception ex)
+        {
+            BadRequest(ex.Message);
+            throw new Exception(ex.Message);
+        }
+        
     }
 
     [HttpGet("{id}")]
-    public User Get(Guid id)
+    public async Task<User> Get(string id)
     {
-        return repository.GetById(id);
+        try
+        {
+            return await repository.GetById(id);
+        }
+        catch (Exception ex)
+        {
+            BadRequest(ex.Message);
+            throw new Exception(ex.Message);
+        }
+        
     }
 
     [HttpDelete(Name = "DeleteUser")]
-    public void Delete(Guid id)
+    public async Task<IActionResult> Delete(string id)
     {
-        repository.Delete(id);
+        try
+        {
+            await repository.Delete(id);
+            return Ok("User was succesfully deleted");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPost("/register")]
@@ -41,28 +67,44 @@ public class UserController : ControllerBase
     {
         try
         {
-            repository.Register(request);
+            await repository.RegisterUser(request);
             return Ok("User succesfully created!");
         }
         catch (Exception ex)
         {
-
             return BadRequest(ex.Message);
         }
 
     }
 
     [Route("/login")]
-    [HttpGet]
-    public bool Login(string email, string password)
+    [HttpPost]
+    public async Task<IActionResult> Login(UserLoginRequest request)
     {
-        return repository.LoginUser(email, password);
+        try
+        {
+            await repository.LoginUser(request);
+            return Ok("Login was succesfull");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPut(Name = "UpdateUser")]
-    public void Update(User user)
+    public async Task<IActionResult> Update(User user)
     {
-        repository.Update(user);
+        try
+        {
+            await repository.Update(user);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        
     }
 }
 

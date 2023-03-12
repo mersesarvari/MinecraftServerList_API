@@ -7,7 +7,7 @@ using MSLServer.SecureServices;
 
 namespace MSLServer.Logic
 {
-    public class UserRepository
+    public class UserRepository : IUserRepository
     {
         ServerListDBContext context;
 

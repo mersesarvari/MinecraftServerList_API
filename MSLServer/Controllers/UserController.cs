@@ -104,6 +104,34 @@ public class UserController : ControllerBase
         }
     }
 
+    [Route("/forgotpassword")]
+    [HttpPost]
+    public async Task<IActionResult> ForgotPassword(string email)
+    {
+        try
+        {
+            await repository.ForgotPassword(email);
+            return Ok("If the email was correct you will recieve an eamil with the password reset");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    [Route("/resetpassword")]
+    [HttpPost]
+    public async Task<IActionResult> ResetPassword(ResetPasswordRequest request)
+    {
+        try
+        {
+            await repository.ResetPassword(request);
+            return Ok("Password reset was succesfull");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 
     [HttpPut(Name = "UpdateUser")]
     public async Task<IActionResult> Update(User user)

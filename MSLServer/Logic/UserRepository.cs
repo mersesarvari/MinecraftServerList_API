@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using MSLServer.Data;
 using MSLServer.Models;
 using MSLServer.SecureServices;
+using System.Security.Cryptography;
 
 namespace MSLServer.Logic
 {
@@ -27,7 +28,7 @@ namespace MSLServer.Logic
         //
         public async Task<User> GetByEmail(string email)
         {
-            return await context.Users.FirstOrDefaultAsync(x => x.Email == Secure.Encrypt(email));
+            return await context.Users.FirstOrDefaultAsync(x => x.Email == email);
         }
         public async Task Insert(User user)
         {
@@ -43,17 +44,16 @@ namespace MSLServer.Logic
             {
                 throw new Exception("User is already exists");
             }
-
             var currentuser = new User()
             {
-                Email = Secure.Encrypt(request.Email),
+                Email = request.Email,
                 Password = Secure.Encrypt(request.Password),
                 VerificationToken = Secure.CreateRandomToken(),
             };
             context.Users.Add(currentuser);
             await context.SaveChangesAsync();
         }
-        //
+
         public async Task<bool> LoginUser(UserLoginRequest request)
         {
             var currentuser = await GetByEmail(request.Email);
@@ -65,7 +65,7 @@ namespace MSLServer.Logic
             {
                 throw new Exception("User not verified");
             }
-            if (Secure.Decrypt(currentuser.Email) != request.Email || Secure.Decrypt(currentuser.Password) != request.Password)
+            if (currentuser.Email != request.Email || Secure.Decrypt(currentuser.Password) != request.Password)
             {
                 throw new Exception("You cannot login with that email-password combination");
             }
@@ -82,6 +82,31 @@ namespace MSLServer.Logic
             await context.SaveChangesAsync();
         }
 
+        public async Task ForgotPassword(string email)
+        {
+            var currentuser = await context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (currentuser == null)
+            {
+                //Dont have to send an error message. we dont want the user to know that the email is registered or not.
+                return;
+            }
+
+            currentuser.PasswordResetToken = Secure.CreateRandomToken();
+            currentuser.ResetTokenExpires = DateTime.Now.AddDays(1);
+            await context.SaveChangesAsync();
+        }
+        public async Task ResetPassword(ResetPasswordRequest request)
+        {
+            var currentuser = await context.Users.FirstOrDefaultAsync(u => u.PasswordResetToken == request.Token);
+            if (currentuser == null && currentuser.ResetTokenExpires < DateTime.Now)
+            {
+                throw new Exception("Invalid or expired token");
+            }
+            currentuser.Password = Secure.Encrypt(request.Password);
+            currentuser.PasswordResetToken = null;
+            currentuser.ResetTokenExpires = null;
+            await context.SaveChangesAsync();
+        }
 
 
         public async Task Update(User obj)

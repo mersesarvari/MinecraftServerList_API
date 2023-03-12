@@ -23,12 +23,21 @@ namespace MSLServer.Logic
         }
         public User GetById(string id)
         {
-            return context.Users.FirstOrDefault(x => x.Id == id);
+            var user = context.Users.FirstOrDefault(x => x.Id == id);
+            if (user == null) {
+                throw new Exception("User with that id not found");
+            }
+            return user;
         }
         //
         public User GetByEmail(string email)
         {
-            return context.Users.FirstOrDefault(x => x.Email == email);
+            var user =  context.Users.FirstOrDefault(x => x.Email == email);
+            if (user == null)
+            {
+                throw new Exception("User with that email address not found");
+            }
+            return user;
         }
 
         public User GetByResetToken(string token)

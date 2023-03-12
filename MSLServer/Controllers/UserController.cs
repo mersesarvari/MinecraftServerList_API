@@ -77,13 +77,17 @@ public class UserController : ControllerBase
         {
             await repository.ForgotPassword(email);
             var user = repository.GetByEmail(email);
+            if (user == null)
+            {
+                throw new Exception("Email address was invalid");
+            }
             emailService.SendEmail(new Email()
             {
                 To = user.Email,
                 Subject = "Minemaina password restoration",
                 Body = $"<h1>Minemania Password Restoration</h1>" +
                 $"<br>" +
-                $"https://localhost:3000/changepassword/{user.PasswordResetToken}"
+                $"https://localhost:3000/resetpassword/{user.PasswordResetToken}"
             });
             return Ok("If the email was correct you will recieve an eamil with the password reset");
         }

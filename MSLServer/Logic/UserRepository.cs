@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using MSLServer.Data;
@@ -69,8 +70,18 @@ namespace MSLServer.Logic
                 throw new Exception("You cannot login with that email-password combination");
             }
             return true;
-
         }
+        public async Task VerifyUser(string token)
+        {
+            var currentuser = await context.Users.FirstOrDefaultAsync(u => u.VerificationToken == token);
+            if (currentuser == null)
+            {
+                throw new Exception("Invalid token");
+            }
+            currentuser.VerifiedAt = DateTime.Now;
+            await context.SaveChangesAsync();
+        }
+
 
 
         public async Task Update(User obj)

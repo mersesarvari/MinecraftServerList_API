@@ -12,5 +12,6 @@ namespace MSLServer.Logic
         Task<bool> LoginUser(UserLoginRequest request);
         Task RegisterUser(UserRegisterRequest request);
         Task Update(User obj);
+        Task VerifyUser(string token);
     }
 }

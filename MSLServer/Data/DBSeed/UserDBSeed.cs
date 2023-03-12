@@ -20,10 +20,11 @@ namespace MSLServer.Data.DBSeed
             var users = new List<User>()
             {
                 new User()
-                { 
+                {
+                    Id = "640db982-f8f1-4df1-a405-05103025bb03",
                     Email = Secure.Encrypt("test@test.com"),
-                    Password = Secure.Encrypt("test"),
-                    Id = "640db982-f8f1-4df1-a405-05103025bb03"
+                    Password = Secure.Encrypt("test"),                    
+                    VerificationToken = Secure.CreateRandomToken(),
                 }
             };
             mb.Entity<User>().HasData(users);

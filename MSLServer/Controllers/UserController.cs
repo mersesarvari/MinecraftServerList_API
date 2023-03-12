@@ -19,31 +19,29 @@ public class UserController : ControllerBase
     }
 
     [HttpGet(Name = "GetUserController")]
-    public async Task<IList<User>> GetAll()
+    public async Task<IActionResult> GetAll()
     {
         try
         {
-            return await repository.GetAll();
+            return Ok(await repository.GetAll());
         }
         catch (Exception ex)
         {
-            BadRequest(ex.Message);
-            throw new Exception(ex.Message);
+            return BadRequest(ex.Message);
         }
         
     }
 
     [HttpGet("{id}")]
-    public async Task<User> Get(string id)
+    public async Task<IActionResult> Get(string id)
     {
         try
         {
-            return await repository.GetById(id);
+            return Ok(await repository.GetById(id));
         }
         catch (Exception ex)
         {
-            BadRequest(ex.Message);
-            throw new Exception(ex.Message);
+            return BadRequest(ex.Message);
         }
         
     }
@@ -91,6 +89,21 @@ public class UserController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+    [Route("/verify")]
+    [HttpPost]
+    public async Task<IActionResult> Verify(string token)
+    {
+        try
+        {
+            await repository.VerifyUser(token);
+            return Ok("Verify was succesfull");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
 
     [HttpPut(Name = "UpdateUser")]
     public async Task<IActionResult> Update(User user)

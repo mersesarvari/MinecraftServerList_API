@@ -6,9 +6,10 @@ namespace MSLServer.Logic
     {
         Task Delete(string id);
         Task ForgotPassword(string email);
-        Task<IList<User>> GetAll();
-        Task<User> GetByEmail(string email);
-        Task<User> GetById(string id);
+        IList<User> GetAll();
+        User GetByEmail(string email);
+        User GetById(string id);
+        User GetByResetToken(string token);
         Task Insert(User user);
         Task<bool> LoginUser(UserLoginRequest request);
         Task RegisterUser(UserRegisterRequest request);

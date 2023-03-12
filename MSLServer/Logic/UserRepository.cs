@@ -17,18 +17,28 @@ namespace MSLServer.Logic
         {
             context = _context;
         }
-        public async Task<IList<User>> GetAll()
+        public IList<User> GetAll()
         {
-            return await context.Users.ToListAsync();
+            return context.Users.ToList();
         }
-        public async Task<User> GetById(string id)
+        public User GetById(string id)
         {
-            return await context.Users.FirstOrDefaultAsync(x => x.Id == id);
+            return context.Users.FirstOrDefault(x => x.Id == id);
         }
         //
-        public async Task<User> GetByEmail(string email)
+        public User GetByEmail(string email)
         {
-            return await context.Users.FirstOrDefaultAsync(x => x.Email == email);
+            return context.Users.FirstOrDefault(x => x.Email == email);
+        }
+
+        public User GetByResetToken(string token)
+        {
+            var user = context.Users.FirstOrDefault(x => x.ResetTokenExpires < DateTime.Now && x.PasswordResetToken == token);
+            if (user == null)
+            {
+                throw new Exception("This token is invalid");
+            }
+            return user;
         }
         public async Task Insert(User user)
         {
@@ -56,7 +66,7 @@ namespace MSLServer.Logic
 
         public async Task<bool> LoginUser(UserLoginRequest request)
         {
-            var currentuser = await GetByEmail(request.Email);
+            var currentuser = GetByEmail(request.Email);
             if (currentuser == null)
             {
                 throw new Exception("You cannot login with that email-password combination");
@@ -78,6 +88,12 @@ namespace MSLServer.Logic
             {
                 throw new Exception("Invalid token");
             }
+            if (currentuser.VerifiedAt != null)
+            {
+                throw new Exception("This user is already verified");
+            }
+            //Nem biztos hogy itt ki kéne törölni a tokent miután aktiváltuk az accountot. Bár picit felesleges is megtartani
+            //currentuser.VerificationToken = null;
             currentuser.VerifiedAt = DateTime.Now;
             await context.SaveChangesAsync();
         }
@@ -98,7 +114,7 @@ namespace MSLServer.Logic
         public async Task ResetPassword(ResetPasswordRequest request)
         {
             var currentuser = await context.Users.FirstOrDefaultAsync(u => u.PasswordResetToken == request.Token);
-            if (currentuser == null && currentuser.ResetTokenExpires < DateTime.Now)
+            if (currentuser == null || currentuser.ResetTokenExpires < DateTime.Now)
             {
                 throw new Exception("Invalid or expired token");
             }
@@ -111,7 +127,7 @@ namespace MSLServer.Logic
 
         public async Task Update(User obj)
         {
-            var olduser = await GetById(obj.Id);
+            var olduser = GetById(obj.Id);
             //Securing method
             obj.Email = Secure.Encrypt(obj.Email);
             obj.Password = Secure.Encrypt(obj.Password);
@@ -120,7 +136,7 @@ namespace MSLServer.Logic
         }
         public async Task Delete(string id)
         {
-            User existing = await GetById(id);
+            User existing = GetById(id);
             if (existing == null)
             {
                 throw new Exception("User doesnt exists with that id");

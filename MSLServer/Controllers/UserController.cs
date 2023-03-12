@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MSLServer.Logic;
 using MSLServer.Models;
+using MSLServer.Services.EmailService;
 
 namespace MSLServer.Controllers;
 
@@ -9,63 +10,31 @@ namespace MSLServer.Controllers;
 public class UserController : ControllerBase
 {
     private IUserRepository repository;
+    private IEmailService emailService;
 
     private readonly ILogger<UserController> _logger;
 
-    public UserController(ILogger<UserController> logger, IUserRepository repository)
+    public UserController(ILogger<UserController> logger, IUserRepository repository, IEmailService emailService)
     {
         _logger = logger;
         this.repository = repository;
+        this.emailService = emailService;
     }
-
-    [HttpGet(Name = "GetUserController")]
-    public async Task<IActionResult> GetAll()
-    {
-        try
-        {
-            return Ok(await repository.GetAll());
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        
-    }
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Get(string id)
-    {
-        try
-        {
-            return Ok(await repository.GetById(id));
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        
-    }
-
-    [HttpDelete(Name = "DeleteUser")]
-    public async Task<IActionResult> Delete(string id)
-    {
-        try
-        {
-            await repository.Delete(id);
-            return Ok("User was succesfully deleted");
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-
     [HttpPost("/register")]
     public async Task<IActionResult> Register(UserRegisterRequest request)
     {
         try
         {
             await repository.RegisterUser(request);
+            var currentuser = repository.GetByEmail(request.Email);
+            emailService.SendEmail(new Email()
+            {
+                To = currentuser.Email,
+                Subject = "Minemaina account verification",
+                Body = $"<h1>Minemania Account Verification</h1>" +
+                $"<br>" +
+                $"https://localhost:3000/verify/{currentuser.VerificationToken}"
+            });
             return Ok("User succesfully created!");
         }
         catch (Exception ex)
@@ -74,14 +43,13 @@ public class UserController : ControllerBase
         }
 
     }
-
-    [Route("/login")]
-    [HttpPost]
+    [HttpPost("/login")]
     public async Task<IActionResult> Login(UserLoginRequest request)
     {
         try
         {
             await repository.LoginUser(request);
+            EmailService emailHandlerRepository = new EmailService();
             return Ok("Login was succesfull");
         }
         catch (Exception ex)
@@ -89,8 +57,7 @@ public class UserController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-    [Route("/verify")]
-    [HttpPost]
+    [HttpPost("/verify")]
     public async Task<IActionResult> Verify(string token)
     {
         try
@@ -103,14 +70,21 @@ public class UserController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-
-    [Route("/forgotpassword")]
-    [HttpPost]
+    [HttpPost("/forgotpassword")]
     public async Task<IActionResult> ForgotPassword(string email)
     {
         try
         {
             await repository.ForgotPassword(email);
+            var user = repository.GetByEmail(email);
+            emailService.SendEmail(new Email()
+            {
+                To = user.Email,
+                Subject = "Minemaina password restoration",
+                Body = $"<h1>Minemania Password Restoration</h1>" +
+                $"<br>" +
+                $"https://localhost:3000/changepassword/{user.PasswordResetToken}"
+            });
             return Ok("If the email was correct you will recieve an eamil with the password reset");
         }
         catch (Exception ex)
@@ -118,8 +92,7 @@ public class UserController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-    [Route("/resetpassword")]
-    [HttpPost]
+    [HttpPost("/resetpassword")]
     public async Task<IActionResult> ResetPassword(ResetPasswordRequest request)
     {
         try
@@ -131,21 +104,6 @@ public class UserController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
-    }
-
-    [HttpPut(Name = "UpdateUser")]
-    public async Task<IActionResult> Update(User user)
-    {
-        try
-        {
-            await repository.Update(user);
-            return Ok();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        
     }
 }
 

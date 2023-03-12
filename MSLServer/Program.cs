@@ -1,7 +1,6 @@
-using Microsoft.AspNetCore.SignalR;
 using MSLServer.Data;
 using MSLServer.Logic;
-using MSLServer.Services;
+using MSLServer.Services.EmailService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +10,9 @@ builder.Services.AddTransient<IServerRepository, ServerRepository>();
 builder.Services.AddTransient<IServerThumbnailRepository, ServerThumbnailRepository>();
 builder.Services.AddTransient<IServerLogoRepository, ServerLogoRepository>();
 builder.Services.AddTransient<ServerListDBContext, ServerListDBContext>();
+/* Services */
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 
 builder.Services.AddSignalR();
 builder.Services.AddCors(options => options.AddDefaultPolicy(

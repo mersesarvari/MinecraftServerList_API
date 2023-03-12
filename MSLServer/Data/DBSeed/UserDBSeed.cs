@@ -21,10 +21,12 @@ namespace MSLServer.Data.DBSeed
             {
                 new User()
                 {
+
                     Id = "640db982-f8f1-4df1-a405-05103025bb03",
-                    Email = "test@test.com",
+                    Email = "proba@gmail.com",
                     Password = Secure.Encrypt("test"),                    
-                    VerificationToken = Secure.CreateRandomToken(),
+                    VerificationToken = null,
+                    VerifiedAt = DateTime.Now,
                 }
             };
             mb.Entity<User>().HasData(users);

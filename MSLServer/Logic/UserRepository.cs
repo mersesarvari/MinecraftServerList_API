@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using MSLServer.Data;
 using MSLServer.Models;
@@ -6,7 +7,7 @@ using MSLServer.SecureServices;
 
 namespace MSLServer.Logic
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository
     {
         ServerListDBContext context;
 
@@ -14,82 +15,82 @@ namespace MSLServer.Logic
         {
             context = _context;
         }
-        public IList<User> GetAll()
+        public async Task<IList<User>> GetAll()
         {
-            return context.Users.ToList();
+            return await context.Users.ToListAsync();
         }
-        public User GetById(string id)
+        public async Task<User> GetById(string id)
         {
-            return context.Users.FirstOrDefault(x => x.Id == id);
+            return await context.Users.FirstOrDefaultAsync(x => x.Id == id);
         }
         //
-        public User GetByEmail(string email)
+        public async Task<User> GetByEmail(string email)
         {
-            return context.Users.FirstOrDefault(x => x.Email == Secure.Encrypt(email));
+            return await context.Users.FirstOrDefaultAsync(x => x.Email == Secure.Encrypt(email));
         }
-        public void Insert(User user)
+        public async Task Insert(User user)
         {
-            user.UserName = Secure.Encrypt(user.UserName);
             user.Email = Secure.Encrypt(user.Email);
             user.Password = Secure.Encrypt(user.Password);
-            context.Users.Add(user);
-            context.SaveChanges();
+            await context.Users.AddAsync(user);
+            await context.SaveChangesAsync();
         }
 
-        public void Register(string username, string email, string password)
+        public async Task RegisterUser(UserRegisterRequest request)
         {
-            var currentuser = new User(Secure.Encrypt(username), Secure.Encrypt(email), Secure.Encrypt(password));
+            if (context.Users.Any(x => x.Email == request.Email))
+            {
+                throw new Exception("User is already exists");
+            }
+
+            var currentuser = new User()
+            {
+                Email = Secure.Encrypt(request.Email),
+                Password = Secure.Encrypt(request.Password),
+                VerificationToken = Secure.CreateRandomToken(),
+            };
             context.Users.Add(currentuser);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
         //
-        public bool LoginUser(string email, string password)
+        public async Task<bool> LoginUser(UserLoginRequest request)
         {
-            var currentuser = GetByEmail(email);
-            if (currentuser != null)
+            var currentuser = await GetByEmail(request.Email);
+            if (currentuser == null)
             {
-                if (currentuser.Email == Secure.Encrypt(email) && currentuser.Password == Secure.Encrypt(password))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                throw new Exception("You cannot login with that email-password combination");
             }
-            else
+            if (currentuser.VerifiedAt == null)
             {
-                return false;
+                throw new Exception("User not verified");
             }
+            if (Secure.Decrypt(currentuser.Email) != request.Email || Secure.Decrypt(currentuser.Password) != request.Password)
+            {
+                throw new Exception("You cannot login with that email-password combination");
+            }
+            return true;
 
         }
 
 
-        public void Update(User obj)
+        public async Task Update(User obj)
         {
-            var olduser = GetById(obj.Id);
+            var olduser = await GetById(obj.Id);
             //Securing method
-            obj.UserName = Secure.Encrypt(obj.UserName);
             obj.Email = Secure.Encrypt(obj.Email);
             obj.Password = Secure.Encrypt(obj.Password);
             olduser = obj;
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
-        public void Delete(string id)
+        public async Task Delete(string id)
         {
-            User existing = context.Users.Find(id);
+            User existing = await GetById(id);
+            if (existing == null)
+            {
+                throw new Exception("User doesnt exists with that id");
+            }
             context.Users.Remove(existing);
-            context.SaveChanges();
-        }
-
-        public User GetById(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Delete(Guid id)
-        {
-            throw new NotImplementedException();
+            context.SaveChangesAsync();
         }
     }
 }

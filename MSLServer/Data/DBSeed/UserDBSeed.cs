@@ -19,7 +19,10 @@ namespace MSLServer.Data.DBSeed
         {
             var users = new List<User>()
             {
-                new User(Secure.Encrypt("test"),Secure.Encrypt("test@test.com"),Secure.Encrypt("test")) {
+                new User()
+                { 
+                    Email = Secure.Encrypt("test@test.com"),
+                    Password = Secure.Encrypt("test"),
                     Id = "640db982-f8f1-4df1-a405-05103025bb03"
                 }
             };

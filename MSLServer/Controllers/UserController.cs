@@ -37,17 +37,17 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("/register")]
-    public ActionResult Register(string username, string email, string password)
+    public async Task<IActionResult> Register(UserRegisterRequest request)
     {
         try
         {
-            repository.Register(username, email, password);
-            return Ok();
+            repository.Register(request);
+            return Ok("User succesfully created!");
         }
-        catch (Exception)
+        catch (Exception ex)
         {
 
-            return BadRequest();
+            return BadRequest(ex.Message);
         }
 
     }

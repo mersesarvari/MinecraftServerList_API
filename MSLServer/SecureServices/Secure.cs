@@ -54,6 +54,13 @@ namespace MSLServer.SecureServices
             }
             return cipherText;
         }
+
+        public static string CreateRandomToken()
+        {
+            return Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
+        }
+        
+
     }
 }
 

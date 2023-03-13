@@ -20,7 +20,7 @@ namespace MSLServer.Logic
         }
         public Server GetById(string id)
         {
-            return context.Servers.FirstOrDefault(x => x.Id.ToString() == id);
+            return context.Servers.FirstOrDefault(x => x.Id == id);
         }
         public void Insert(string ip, string port, string ownerid)
         {
@@ -31,7 +31,7 @@ namespace MSLServer.Logic
 
         public void Update(Server obj)
         {
-            var old = GetById(obj.Id.ToString());
+            var old = GetById(obj.Id);
             old = obj;
             context.SaveChanges();
         }
@@ -45,7 +45,7 @@ namespace MSLServer.Logic
         public void AddThumbnail(string id)
         {
             var currentThumbnail = context.ServerThumbnails.FirstOrDefault(x => x.Name == id);
-            var current = GetAll().FirstOrDefault(x => x.Id.ToString() == id);
+            var current = GetAll().FirstOrDefault(x => x.Id == id);
             current.ThumbnailPath = Resource.FilePath + currentThumbnail.FullName;
             context.SaveChanges();
         }

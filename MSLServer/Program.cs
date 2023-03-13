@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Diagnostics;
 using MSLServer.Data;
 using MSLServer.Logic;
+using MSLServer.Middlewares;
 using MSLServer.Services.EmailService;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +12,7 @@ builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IServerRepository, ServerRepository>();
 builder.Services.AddTransient<IServerThumbnailRepository, ServerThumbnailRepository>();
 builder.Services.AddTransient<IServerLogoRepository, ServerLogoRepository>();
+builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 builder.Services.AddTransient<ServerListDBContext, ServerListDBContext>();
 /* Services */
 builder.Services.AddScoped<IEmailService, EmailService>();
@@ -48,6 +52,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+app.UseAuthorization();
 app.UseRouting();
 app.UseStaticFiles();
 app.UseCors();

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MSLServer.Logic;
 using MSLServer.Models;
 using MSLServer.Services.EmailService;
+using System;
 
 namespace MSLServer.Controllers;
 
@@ -64,11 +65,11 @@ public class UserController : ControllerBase
         try
         {
             await repository.VerifyUser(token);
-            return Ok("Verify was succesfull");
+            return Ok("Verification was succesfull");
         }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest("An error occured during the verification.");
         }
     }
     [HttpPost("/forgotpassword")]

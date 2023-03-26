@@ -195,13 +195,32 @@ public class ServerController : ControllerBase
         serverRepository.Update(server);
     }
 
-    [Route("/status")]
+    [Route("/statusall")]
     [HttpGet]
     public IList<Server> ChectServerStatus()
     {
         var server = serverRepository.GetAll();
         serverRepository.CheckSpecificServersStatus(server);
         return server;
+    }
+
+    [Route("/status")]
+    [HttpGet]
+    public IActionResult ChectServerStatus(string hostname, string port)
+    {
+        try
+        {
+            Console.WriteLine(serverRepository.GetServerStatus(hostname, port));
+            return Ok(serverRepository.GetServerStatus(hostname, port));
+            
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+            
+        }
+        
+        
     }
 }
 

@@ -7,6 +7,7 @@ namespace MSLServer.Logic
         void AddThumbnail(string id);
         void CheckAllServerStatus();
         void CheckServerStatus(Server server);
+        bool GetServerStatus(string hostname, string port);
         void CheckSpecificServersStatus(IList<Server> servers);
         void Delete(string id);
         IList<Server> GetAll();

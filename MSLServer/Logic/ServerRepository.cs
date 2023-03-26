@@ -47,11 +47,10 @@ namespace MSLServer.Logic
                     Website = server.Website
 
                 };
-                //Adding Thumbnail
+                //Set the server thumbnail
                 string thumbnailPath = Path.Combine(Resource.thumbnailDirectory, newServer.Id + Path.GetExtension(server.Thumbnail.FileName));
                 using (Stream fileStream = new FileStream(thumbnailPath, FileMode.Create))
                 {
-
                     server.Thumbnail.CopyToAsync(fileStream);
                     var extension = Path.GetExtension(thumbnailPath);
                     var filename = newServer.Id + extension;
@@ -61,7 +60,7 @@ namespace MSLServer.Logic
                     thumbnailRepository.Create(newThumbnail);
                 }
 
-                //Adding logo
+                //Set the server Logo
                 string logoPath = Path.Combine(Resource.logoDirectory, newServer.Id + Path.GetExtension(server.Logo.FileName));
                 using (Stream fileStream = new FileStream(logoPath, FileMode.Create))
                 {
@@ -73,18 +72,19 @@ namespace MSLServer.Logic
                     newServer.LogoPath = newLogo.FullName;
                     logoRepository.Create(newLogo);
                 }
+                
+                //Scecking server status and if the server is valid
                 context.Servers.Add(newServer);
                 context.SaveChanges();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                throw new Exception(ex.Message);
             }
             
 
         }
-
         public void Update(Server obj)
         {
             
@@ -98,7 +98,6 @@ namespace MSLServer.Logic
             context.Servers.Remove(old);
             context.SaveChanges();
         }
-
         public void AddThumbnail(string id)
         {
             var currentThumbnail = context.ServerThumbnails.FirstOrDefault(x => x.Name == id);
@@ -106,22 +105,18 @@ namespace MSLServer.Logic
             current.ThumbnailPath = Resource.FilePath + currentThumbnail.FullName;
             context.SaveChanges();
         }
-
         public Server GetByIp(string ipaddress)
         {
             return context.Servers.FirstOrDefault(x => x.JavaIp == ipaddress || x.BedrockIp == ipaddress);
         }
-
         public IList<Server> GetByStatus()
         {
             return context.Servers.Where(x => x.Status == true).ToList();
         }
-
         public IList<Server> GetByPlayerCount(int minplayers)
         {
             return context.Servers.Where(x => x.CurrentPlayers >= minplayers).ToList();
         }
-
         public void CheckServerStatus(Server server)
         {
             
@@ -160,7 +155,18 @@ namespace MSLServer.Logic
 
             context.SaveChanges();
         }
-
+        public bool GetServerStatus(string hostname, string port)
+        {
+            MineStat ms = new MineStat(hostname, ushort.Parse(port), 2, SlpProtocol.Json);
+            if (ms.ServerUp)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         public void CheckSpecificServersStatus(IList<Server> servers)
         {
             if (servers.Count() <= 20)
@@ -171,7 +177,6 @@ namespace MSLServer.Logic
                 }
             }
         }
-
         public void CheckAllServerStatus()
         {
             var servers = GetAll();

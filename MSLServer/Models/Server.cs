@@ -13,12 +13,29 @@ namespace MSLServer.Models
         public string? Registration { get; set; }
         public string? Publisherid { get; set; }
 
+        #region ServerDetails
         [Required]
         public string Servername { get; set; }
         [Required]
-        public string? Ip { get; set; }
+        public string? JavaIp { get; set; }
         [Required]
-        public string? Port { get; set; }
+        public string? JavaPort { get; set; }
+        [Required]
+        public string? BedrockIp { get; set; }
+        [Required]
+        public string? BedrockPort { get; set; }
+        #endregion
+        #region Social
+        public string? Youtube { get; set; }
+        public string? Discord { get; set; }
+        public string? Website { get; set; }
+        #endregion
+        [Required]
+        public string? Country { get; set; }
+        [Required]
+        public string? ShortDescription { get; set; }
+        [Required]
+        public string? LongDescription { get; set; }
         public bool Status { get; set; }
         public int CurrentPlayers { get; set; }
         public int MaxPlayer { get; set; }

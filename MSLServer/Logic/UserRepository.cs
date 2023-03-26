@@ -24,7 +24,8 @@ namespace MSLServer.Logic
         public User GetById(string id)
         {
             var user = context.Users.FirstOrDefault(x => x.Id == id);
-            if (user == null) {
+            if (user == null)
+            {
                 throw new Exception("User with that id not found");
             }
             return user;
@@ -32,7 +33,7 @@ namespace MSLServer.Logic
         //
         public User GetByEmail(string email)
         {
-            var user =  context.Users.FirstOrDefault(x => x.Email == email);
+            var user = context.Users.FirstOrDefault(x => x.Email == email);
             if (user == null)
             {
                 throw new Exception("User with that email address not found");
@@ -73,7 +74,7 @@ namespace MSLServer.Logic
             await context.SaveChangesAsync();
         }
 
-        public async Task<bool> LoginUser(UserLoginRequest request)
+        public async Task<string> LoginUser(UserLoginRequest request)
         {
             var currentuser = GetByEmail(request.Email);
             if (currentuser == null)
@@ -88,7 +89,7 @@ namespace MSLServer.Logic
             {
                 throw new Exception("You cannot login with that email-password combination");
             }
-            return true;
+            return currentuser.Id;
         }
         public async Task VerifyUser(string token)
         {

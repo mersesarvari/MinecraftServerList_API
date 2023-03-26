@@ -24,7 +24,7 @@ namespace MSLServer.Data.DBSeed
 
                     Id = "640db982-f8f1-4df1-a405-05103025bb03",
                     Email = "proba@gmail.com",
-                    Password = Secure.Encrypt("test"),                    
+                    Password = Secure.Encrypt("proba"),                    
                     VerificationToken = null,
                     VerifiedAt = DateTime.Now,
                 }

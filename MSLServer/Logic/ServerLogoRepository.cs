@@ -19,13 +19,13 @@ namespace MSLServer.Logic
         public void Create(ServerLogo item)
         {
             var count = db.Servers.Count();
-            var currentserver = db.Servers.FirstOrDefault(x => x.Id == item.ServerId);
+            //var currentserver = db.Servers.FirstOrDefault(x => x.Id == item.ServerId);
             if (db.ServerLogos.Where(x => x.Id == item.Id).Count() > 0)
             {
                 db.ServerLogos.Remove(item);
             }
             item.ServerId = item.Name;
-            currentserver.ThumbnailPath = item.FullName;
+            //currentserver.ThumbnailPath = item.FullName;
             db.ServerLogos.Add(item);
             db.SaveChanges();
         }

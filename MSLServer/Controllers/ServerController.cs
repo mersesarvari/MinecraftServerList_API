@@ -35,10 +35,31 @@ public class ServerController : ControllerBase
         return serverRepository.GetById(id);
     }
     [HttpPost]
-    public void Post(string ip, string port, string ownerid)
+    public IActionResult Post([FromForm]CreateServerDTO server)
     {
-        serverRepository.Insert(ip, port, ownerid);
-        serverRepository.CheckServerStatus(ip, port);
+        try
+        {
+            serverRepository.Insert(server);
+            if (server.JavaIp != "")
+            {
+                var s = serverRepository.GetByIp(server.JavaIp);
+                serverRepository.CheckServerStatus(s);
+            }
+            if (server.BedrockIp != "")
+            {
+                var s = serverRepository.GetByIp(server.BedrockIp);
+                serverRepository.CheckServerStatus(s);
+            }
+            return Ok("Server created succesfully");
+        }
+        catch (Exception ex)
+        {
+
+            return BadRequest(ex.Message);
+        }
+        
+
+        
     }
 
     [Route("/uploadthumbnail")]

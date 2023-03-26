@@ -19,13 +19,13 @@ namespace MSLServer.Logic
         public void Create(ServerThumbnail item)
         {
             var count = db.Servers.Count();
-            var currentserver = db.Servers.FirstOrDefault(x => x.Id == item.ServerId);
+            //var currentserver = db.Servers.FirstOrDefault(x => x.Id == item.ServerId);
             if (db.ServerThumbnails.Where(x => x.Id == item.Id).Count() > 0)
             {
                 db.ServerThumbnails.Remove(item);
             }
             item.ServerId = item.Name;
-            currentserver.ThumbnailPath = item.FullName;
+            //currentserver.ThumbnailPath = item.FullName;
             db.ServerThumbnails.Add(item);
             db.SaveChanges();
         }

@@ -50,9 +50,9 @@ public class UserController : ControllerBase
     {
         try
         {
-            await repository.LoginUser(request);
+            var id = await repository.LoginUser(request);
             EmailService emailHandlerRepository = new EmailService();
-            return Ok("Login was succesfull");
+            return Ok(id);
         }
         catch (Exception ex)
         {

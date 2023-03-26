@@ -40,14 +40,14 @@ public class ServerController : ControllerBase
         try
         {
             serverRepository.Insert(server);
-            if (server.JavaIp != "")
-            {
-                var s = serverRepository.GetByIp(server.JavaIp);
-                serverRepository.CheckServerStatus(s);
-            }
             if (server.BedrockIp != "")
             {
                 var s = serverRepository.GetByIp(server.BedrockIp);
+                serverRepository.CheckServerStatus(s);
+            }
+            if (server.JavaIp != "")
+            {
+                var s = serverRepository.GetByIp(server.JavaIp);
                 serverRepository.CheckServerStatus(s);
             }
             return Ok("Server created succesfully");

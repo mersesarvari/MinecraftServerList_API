@@ -21,25 +21,38 @@ public class ServerStatusCheckerBackgroundWorker
         logger.LogInformation("BackgroundWorkerService started");
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        return Task.CompletedTask;
-    }
-
     protected async override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        while (await timer.WaitForNextTickAsync(stoppingToken) && !stoppingToken.IsCancellationRequested)
+        try
         {
-            logger.LogInformation("BackgroundWorkerService completed a task");
-            await DoWorkAsync();
-            
+            while (await timer.WaitForNextTickAsync(stoppingToken) && !stoppingToken.IsCancellationRequested)
+            {
+                logger.LogInformation("BackgroundWorkerService completed a task");
+                await DoWorkAsync();
+
+            }
         }
+        catch (Exception ex)
+        {
+
+            Console.WriteLine(ex.Message);
+        }
+        
     }
     private async Task DoWorkAsync()
     {
-        //Console.WriteLine(DateTime.Now.ToString("O"));
-        serverRepo.CheckAllServerStatus();
-        logger.LogInformation("[ServerStatusBW] : Server status check");
+        try
+        {
+            //Console.WriteLine(DateTime.Now.ToString("O"));
+            serverRepo.CheckAllServerStatus();
+            logger.LogInformation("[ServerStatusBW] : Server status check");
+        }
+        catch (Exception ex)
+        {
+
+            await Console.Out.WriteLineAsync(ex.Message);
+        }
+        
 
     }
 }

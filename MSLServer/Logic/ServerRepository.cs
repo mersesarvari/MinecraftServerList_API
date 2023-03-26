@@ -28,51 +28,60 @@ namespace MSLServer.Logic
         }
         public void Insert(CreateServerDTO server)
         {
-            var newServer = new Server() {
-                Publisherid = server.Publisherid,
-                Servername = server.Servername,
-                JavaIp = server.JavaIp,
-                JavaPort = server.JavaPort,
-                BedrockIp = server.BedrockIp,
-                BedrockPort = server.BedrockPort,
-                Country = server.Country,
+            try
+            {
+                var newServer = new Server()
+                {
+                    Publisherid = server.Publisherid,
+                    Servername = server.Servername,
+                    JavaIp = server.JavaIp,
+                    JavaPort = server.JavaPort,
+                    BedrockIp = server.BedrockIp,
+                    BedrockPort = server.BedrockPort,
+                    Country = server.Country,
 
-                ShortDescription = server.ShortDescription,
-                LongDescription = server.LongDescription,
-                Youtube =server.Youtube,
-                Discord =server.Discord,
-                Website=server.Website
+                    ShortDescription = server.ShortDescription,
+                    LongDescription = server.LongDescription,
+                    Youtube = server.Youtube,
+                    Discord = server.Discord,
+                    Website = server.Website
 
-            };
+                };
+                //Adding Thumbnail
+                string thumbnailPath = Path.Combine(Resource.thumbnailDirectory, newServer.Id + Path.GetExtension(server.Thumbnail.FileName));
+                using (Stream fileStream = new FileStream(thumbnailPath, FileMode.Create))
+                {
 
-            //Adding Thumbnail
-            string thumbnailPath = Path.Combine(Resource.thumbnailDirectory, newServer.Id + Path.GetExtension(server.Thumbnail.FileName));
-            using (Stream fileStream = new FileStream(thumbnailPath, FileMode.Create))
+                    server.Thumbnail.CopyToAsync(fileStream);
+                    var extension = Path.GetExtension(thumbnailPath);
+                    var filename = newServer.Id + extension;
+
+                    var newThumbnail = new ServerThumbnail() { Name = newServer.Id, FullName = filename, Extension = extension, ServerId = newServer.Id };
+                    newServer.ThumbnailPath = newThumbnail.FullName;
+                    thumbnailRepository.Create(newThumbnail);
+                }
+
+                //Adding logo
+                string logoPath = Path.Combine(Resource.logoDirectory, newServer.Id + Path.GetExtension(server.Logo.FileName));
+                using (Stream fileStream = new FileStream(logoPath, FileMode.Create))
+                {
+                    server.Logo.CopyToAsync(fileStream);
+                    var extension = Path.GetExtension(logoPath);
+                    var filename = newServer.Id + extension;
+
+                    var newLogo = new ServerLogo() { Name = newServer.Id, FullName = filename, Extension = extension, ServerId = newServer.Id };
+                    newServer.LogoPath = newLogo.FullName;
+                    logoRepository.Create(newLogo);
+                }
+                context.Servers.Add(newServer);
+                context.SaveChanges();
+            }
+            catch (Exception)
             {
 
-                server.Thumbnail.CopyToAsync(fileStream);
-                var extension = Path.GetExtension(thumbnailPath);
-                var filename = newServer.Id + extension;
-                
-                var newThumbnail = new ServerThumbnail() { Name = newServer.Id, FullName = filename, Extension = extension, ServerId = newServer.Id };
-                newServer.ThumbnailPath =newThumbnail.FullName;
-                thumbnailRepository.Create(newThumbnail);
+                throw;
             }
-
-            //Adding logo
-            string logoPath = Path.Combine(Resource.logoDirectory, newServer.Id + Path.GetExtension(server.Logo.FileName));
-            using (Stream fileStream = new FileStream(logoPath, FileMode.Create))
-            {
-                server.Logo.CopyToAsync(fileStream);
-                var extension = Path.GetExtension(logoPath);
-                var filename = newServer.Id + extension;
-
-                var newLogo = new ServerLogo() { Name = newServer.Id, FullName = filename, Extension = extension, ServerId = newServer.Id };
-                newServer.LogoPath = newLogo.FullName;
-                logoRepository.Create(newLogo);
-            }
-            context.Servers.Add(newServer);
-            context.SaveChanges();
+            
 
         }
 
@@ -115,8 +124,8 @@ namespace MSLServer.Logic
 
         public void CheckServerStatus(Server server)
         {
-
-            if (server.JavaIp != "")
+            
+            if (server.BedrockIp != "")
             {
                 var current = GetByIp(server.BedrockIp);
                 MineStat ms = new MineStat(server.BedrockIp, ushort.Parse(server.BedrockPort), 2, SlpProtocol.Json);

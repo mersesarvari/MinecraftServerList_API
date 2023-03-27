@@ -23,14 +23,13 @@ public class ServerController : ControllerBase
         this.thumbnailRepository = thumbnailRepository;
         this.logoRepository = logoRepository;
     }
-
-    [HttpGet(Name = "GetServerController")]
+    [HttpGet]
     public IList<Server> GetAll()
     {
         return serverRepository.GetAll();
     }
-    [Route("/getserverbyid")]
-    [HttpGet]
+    
+    [HttpGet("{id}")]
     public Server Get(string id)
     {
         return serverRepository.GetById(id);

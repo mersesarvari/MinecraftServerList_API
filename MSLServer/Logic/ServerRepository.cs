@@ -27,11 +27,15 @@ namespace MSLServer.Logic
         }
         public Server GetById(string id)
         {
-            foreach (var item in GetAll())
+            if (context.Servers.First(x => x.Id == id) != null)
             {
-                Console.WriteLine(item.Id);
+                return context.Servers.First(x => x.Id == id);
             }
-            return context.Servers.FirstOrDefault(x => x.Id == id);
+            else
+            {
+                throw new Exception("Server with that id doesnt exists");
+            }
+            
         }
         public void Insert(CreateServerDTO server)
         {

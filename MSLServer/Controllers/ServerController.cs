@@ -29,7 +29,6 @@ public class ServerController : ControllerBase
     {
         return serverRepository.GetAll();
     }
-
     [Route("/getserverbyid")]
     [HttpGet]
     public Server Get(string id)
@@ -154,7 +153,7 @@ public class ServerController : ControllerBase
         }
     }
 
-    [Route("/getthumbnails")]
+    [Route("/getthumbnaildata")]
     [HttpGet]
     public IList<ServerThumbnail> GetThumbnails()
     {
@@ -169,7 +168,7 @@ public class ServerController : ControllerBase
         }
     }
 
-    [Route("/getthumbnail")]
+    [Route("/thumbnail")]
     [HttpGet]
     public IActionResult GetThumbnail(string id)
     {
@@ -178,7 +177,24 @@ public class ServerController : ControllerBase
         {            
             var server = serverRepository.GetById(id);
             var path = Resource.thumbnailDirectory + "/" + server.ThumbnailPath;
-            return File(System.IO.File.OpenRead(path),contentType: "video/mp4");
+            return File(System.IO.File.OpenRead(path),contentType:$"video/{Path.GetFileName(path)}");
+        }
+        catch (Exception ex)
+        {
+
+            return BadRequest(ex.Message);
+        }
+    }
+    [Route("/logo")]
+    [HttpGet]
+    public IActionResult GetLogo(string id)
+    {
+
+        try
+        {
+            var server = serverRepository.GetById(id);
+            var path = Resource.logoDirectory + "/" + server.LogoPath;
+            return File(System.IO.File.OpenRead(path), contentType: $"image/{Path.GetFileName(path)}");
         }
         catch (Exception ex)
         {
@@ -187,9 +203,9 @@ public class ServerController : ControllerBase
         }
     }
 
-    [Route("/getlogo")]
+    [Route("/getlogodata")]
     [HttpGet]
-    public IList<ServerLogo> GetLogo()
+    public IList<ServerLogo> GetLogoData()
     {
         try
         {

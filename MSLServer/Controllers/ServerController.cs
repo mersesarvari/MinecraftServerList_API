@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using MSLServer.Logic;
 using MSLServer.Models;
+using System.IO;
 
 namespace MSLServer.Controllers;
 
@@ -29,7 +30,8 @@ public class ServerController : ControllerBase
         return serverRepository.GetAll();
     }
 
-    [HttpGet("{id}")]
+    [Route("/getserverbyid")]
+    [HttpGet]
     public Server Get(string id)
     {
         return serverRepository.GetById(id);
@@ -164,6 +166,24 @@ public class ServerController : ControllerBase
         {
 
             throw new Exception(ex.Message);
+        }
+    }
+
+    [Route("/getthumbnail")]
+    [HttpGet]
+    public IActionResult GetThumbnail(string id)
+    {
+        
+        try
+        {            
+            var server = serverRepository.GetById(id);
+            var path = Resource.thumbnailDirectory + "/" + server.ThumbnailPath;
+            return File(System.IO.File.OpenRead(path),contentType: "video/mp4");
+        }
+        catch (Exception ex)
+        {
+
+            return BadRequest(ex.Message);
         }
     }
 

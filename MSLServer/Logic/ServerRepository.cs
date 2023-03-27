@@ -2,6 +2,8 @@
 using MineStatLib;
 using MSLServer.Data;
 using MSLServer.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Diagnostics.Metrics;
 
 namespace MSLServer.Logic
 {
@@ -19,11 +21,16 @@ namespace MSLServer.Logic
         }
         public IList<Server> GetAll()
         {
-            //SetServerListInformation(context.Servers.ToList());
-            return context.Servers.ToList();
+            
+            var servers= context.Servers.ToList();
+            return servers;
         }
         public Server GetById(string id)
         {
+            foreach (var item in GetAll())
+            {
+                Console.WriteLine(item.Id);
+            }
             return context.Servers.FirstOrDefault(x => x.Id == id);
         }
         public void Insert(CreateServerDTO server)

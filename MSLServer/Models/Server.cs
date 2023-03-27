@@ -42,6 +42,11 @@ namespace MSLServer.Models
         public string? ServerVersion { get; set; }
         public string? ThumbnailPath { get; set; }
         public string? LogoPath { get; set; }
+
+        [NotMapped]
+        public byte[]? ThumbnailData { get; set; }
+        [NotMapped]
+        public byte[]? LogoData { get; set; }
         //public string Gamemode { get; set; }
         //public string Modt { get; set; }
         //public long Latency { get; set; }

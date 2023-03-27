@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using MSLServer.Data;
 using MSLServer.Logic;
 using MSLServer.Middlewares;
+using MSLServer.Models;
 using MSLServer.Services.EmailService;
 using System.Text;
 

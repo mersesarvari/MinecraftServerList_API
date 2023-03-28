@@ -1,4 +1,5 @@
 ﻿using MSLServer.Models;
+using MSLServer.Models.User;
 
 namespace MSLServer.Logic
 {

@@ -4,6 +4,7 @@ using System.Reflection.Emit;
 using System.Net;
 using MSLServer.Data.DBSeed;
 using MSLServer.Models;
+using MSLServer.Models.User;
 
 namespace MSLServer.Data
 {

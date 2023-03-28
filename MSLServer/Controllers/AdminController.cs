@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MSLServer.Logic;
-using MSLServer.Models;
+using MSLServer.Models.User;
 using MSLServer.Services.EmailService;
 
 namespace MSLServer.Controllers;

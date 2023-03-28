@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MSLServer.SecureServices;
-using MSLServer.Models;
+using MSLServer.Models.User;
 
 namespace MSLServer.Data.DBSeed
 {
@@ -23,8 +23,8 @@ namespace MSLServer.Data.DBSeed
                 {
 
                     Id = "640db982-f8f1-4df1-a405-05103025bb03",
-                    Email = "proba@proba.com",
-                    Password = Secure.Encrypt("proba"),                    
+                    Email = "user@example.com",
+                    Password = Secure.Encrypt("string"),                    
                     VerificationToken = null,
                     VerifiedAt = DateTime.Now,
                     Role = Roles.Admin

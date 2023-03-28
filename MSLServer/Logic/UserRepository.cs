@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using MSLServer.Data;
 using MSLServer.Models;
+using MSLServer.Models.User;
 using MSLServer.SecureServices;
 using Newtonsoft.Json.Linq;
 using System.Security.Cryptography;

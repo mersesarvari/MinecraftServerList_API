@@ -2,13 +2,14 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace MSLServer.Models
+namespace MSLServer.Models.User
 {
-    public enum Roles { 
+    public enum Roles
+    {
         User,
         Vip,
         Moderator,
-        Admin,           
+        Admin,
     }
     [Table("User")]
     public class User
@@ -35,7 +36,7 @@ namespace MSLServer.Models
 
         public User(string id)
         {
-            this.Id = id;
+            Id = id;
         }
         public User()
         {

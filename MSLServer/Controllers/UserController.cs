@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using MSLServer.Logic;
 using MSLServer.Models;
+using MSLServer.Models.User;
 using MSLServer.SecureServices;
 using MSLServer.Services.EmailService;
 using System;
@@ -57,7 +59,29 @@ public class UserController : ControllerBase
             var user = await repository.LoginUser(request);
             EmailService emailHandlerRepository = new EmailService();
             string token = JWTToken.CreateToken(user);
-            return Ok(token);
+            var userInfo = new UserInfoDTO() { Email=user.Email, Token=token};
+            return Ok(userInfo);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    [HttpPost("/auth")]
+    public async Task<IActionResult> Auth(string email)
+    {
+        try
+        {
+            string accessToken = Request.Headers[HeaderNames.Authorization];
+            accessToken = accessToken.Split(" ")[1];
+            var user = repository.GetByEmail(email);
+            var asd = JWTToken.GetIdTokenExpiry(accessToken, "email");
+            if (user.Email != asd)
+            {
+                return Ok(false);
+            }
+            return Ok(true);
+            
         }
         catch (Exception ex)
         {
@@ -65,22 +89,6 @@ public class UserController : ControllerBase
         }
     }
 
-    //[Route("/auth")]
-    //[HttpGet]
-    //public async Task<IActionResult> Auth([FromHeader] string Authorization)
-    //{
-    //    try
-    //    {
-    //        User temp = repository.GetById(JWTToken.GetDataFromToken(HttpContext, "_id"));
-    //        return Ok(temp);
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return BadRequest(ex);
-    //    }
-
-    //}
-    
     [HttpPost("/verify"), AllowAnonymous]
     public async Task<IActionResult> Verify(string token)
     {

@@ -13,7 +13,6 @@ public class ServerController : ControllerBase
     private IServerRepository serverRepository;
     private IServerThumbnailRepository thumbnailRepository;
     private IServerLogoRepository logoRepository;
-
     private readonly ILogger<ServerController> _logger;
 
     public ServerController(ILogger<ServerController> logger, IServerRepository serverRepository, IServerThumbnailRepository thumbnailRepository, IServerLogoRepository logoRepository)

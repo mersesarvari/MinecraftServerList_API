@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.IdentityModel.Tokens;
 using MSLServer.Data;
 using MSLServer.Logic;
 using MSLServer.Middlewares;
 using MSLServer.Models;
+using MSLServer.Models.Policy;
 using MSLServer.Services.EmailService;
 using System.Text;
 
@@ -17,6 +20,10 @@ builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 builder.Services.AddTransient<ServerListDBContext, ServerListDBContext>();
 /* Services */
 builder.Services.AddScoped<IEmailService, EmailService>();
+
+// Adding background worker services
+builder.Services.AddSingleton(new PeriodicTimer(TimeSpan.FromSeconds(60)));
+builder.Services.AddHostedService<ServerStatusCheckerBackgroundWorker>();
 
 
 builder.Services.AddSignalR();
@@ -33,9 +40,28 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(
 
 builder.Services.AddControllers();
 
-// Adding background worker services
-builder.Services.AddSingleton(new PeriodicTimer(TimeSpan.FromSeconds(60)));
-builder.Services.AddHostedService<ServerStatusCheckerBackgroundWorker>();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Resource.Criptkey)),
+        ValidateIssuer = false,
+        ValidateAudience = false
+
+    };
+
+});
+
+builder.Services.AddAuthorization(configure =>
+{
+    configure.AddPolicy("DeletePolicy", policyBuilder =>
+    {
+        policyBuilder.AddRequirements(new IdRequirement(""));
+    });
+});
+
+
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -53,8 +79,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.UseRouting();
 app.UseStaticFiles();
 app.UseCors();

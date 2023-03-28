@@ -1,10 +1,13 @@
 ﻿using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using MSLServer.Data;
 using MSLServer.Models;
 using MSLServer.SecureServices;
+using Newtonsoft.Json.Linq;
 using System.Security.Cryptography;
 
 namespace MSLServer.Logic
@@ -17,10 +20,12 @@ namespace MSLServer.Logic
         {
             context = _context;
         }
+        [Authorize]
         public IList<User> GetAll()
         {
             return context.Users.ToList();
         }
+        [Authorize]
         public User GetById(string id)
         {
             var user = context.Users.FirstOrDefault(x => x.Id == id);
@@ -74,7 +79,7 @@ namespace MSLServer.Logic
             await context.SaveChangesAsync();
         }
 
-        public async Task<string> LoginUser(UserLoginRequest request)
+        public async Task<User> LoginUser(UserLoginRequest request)
         {
             var currentuser = GetByEmail(request.Email);
             if (currentuser == null)
@@ -89,7 +94,16 @@ namespace MSLServer.Logic
             {
                 throw new Exception("You cannot login with that email-password combination");
             }
-            return currentuser.Id;
+            //Authorizing the user
+            return currentuser;
+        }
+
+        
+        public async Task<string> AuthorizeUser(UserLoginRequest request)
+        {
+            User user = await LoginUser(request);
+            string token = JWTToken.CreateToken(user);
+            return token;
         }
         public async Task VerifyUser(string token)
         {

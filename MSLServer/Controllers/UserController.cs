@@ -1,9 +1,13 @@
-using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using MSLServer.Logic;
 using MSLServer.Models;
+using MSLServer.SecureServices;
 using MSLServer.Services.EmailService;
 using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace MSLServer.Controllers;
 
@@ -13,14 +17,16 @@ public class UserController : ControllerBase
 {
     private IUserRepository repository;
     private IEmailService emailService;
+    private readonly IConfiguration configuration;
 
     private readonly ILogger<UserController> _logger;
 
-    public UserController(ILogger<UserController> logger, IUserRepository repository, IEmailService emailService)
+    public UserController(ILogger<UserController> logger, IUserRepository repository, IEmailService emailService,IConfiguration _configuration)
     {
         _logger = logger;
         this.repository = repository;
         this.emailService = emailService;
+        this.configuration = _configuration;
     }
     [HttpPost("/register")]
     public async Task<IActionResult> Register(UserRegisterRequest request)
@@ -45,20 +51,40 @@ public class UserController : ControllerBase
         }
 
     }
+    
     [HttpPost("/login")]
+    [AllowAnonymous]
     public async Task<IActionResult> Login(UserLoginRequest request)
     {
         try
         {
-            var id = await repository.LoginUser(request);
+            var user = await repository.LoginUser(request);
             EmailService emailHandlerRepository = new EmailService();
-            return Ok(id);
+            string token = JWTToken.CreateToken(user);
+            return Ok(token);
         }
         catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }
     }
+
+    //[Route("/auth")]
+    //[HttpGet]
+    //public async Task<IActionResult> Auth([FromHeader] string Authorization)
+    //{
+    //    try
+    //    {
+    //        User temp = repository.GetById(JWTToken.GetDataFromToken(HttpContext, "_id"));
+    //        return Ok(temp);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return BadRequest(ex);
+    //    }
+
+    //}
+    
     [HttpPost("/verify")]
     public async Task<IActionResult> Verify(string token)
     {

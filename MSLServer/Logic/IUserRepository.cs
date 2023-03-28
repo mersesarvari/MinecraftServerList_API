@@ -11,7 +11,7 @@ namespace MSLServer.Logic
         User GetById(string id);
         User GetByResetToken(string token);
         Task Insert(User user);
-        Task<string> LoginUser(UserLoginRequest request);
+        Task<User> LoginUser(UserLoginRequest request);
         Task RegisterUser(UserRegisterRequest request);
         Task ResetPassword(ResetPasswordRequest request);
         Task Update(User obj);

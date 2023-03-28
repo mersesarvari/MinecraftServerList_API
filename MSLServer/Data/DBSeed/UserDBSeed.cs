@@ -23,10 +23,19 @@ namespace MSLServer.Data.DBSeed
                 {
 
                     Id = "640db982-f8f1-4df1-a405-05103025bb03",
-                    Email = "proba@gmail.com",
+                    Email = "proba@proba.com",
                     Password = Secure.Encrypt("proba"),                    
                     VerificationToken = null,
                     VerifiedAt = DateTime.Now,
+                    Role = Roles.Admin
+                },
+                new User()
+                {
+                    Email = "merse.sarvari@gmail.com",
+                    Password = Secure.Encrypt("proba"),
+                    VerificationToken = null,
+                    VerifiedAt = DateTime.Now,
+                    Role = Roles.Admin
                 }
             };
             mb.Entity<User>().HasData(users);

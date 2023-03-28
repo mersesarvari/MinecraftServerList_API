@@ -11,24 +11,21 @@ using System.Security.Claims;
 
 namespace MSLServer.Controllers;
 
-[ApiController]
-[Route("[controller]")]
+[ApiController, Authorize, Route("[controller]")]
 public class UserController : ControllerBase
 {
     private IUserRepository repository;
     private IEmailService emailService;
-    private readonly IConfiguration configuration;
 
     private readonly ILogger<UserController> _logger;
 
-    public UserController(ILogger<UserController> logger, IUserRepository repository, IEmailService emailService,IConfiguration _configuration)
+    public UserController(ILogger<UserController> logger, IUserRepository repository, IEmailService emailService)
     {
         _logger = logger;
         this.repository = repository;
         this.emailService = emailService;
-        this.configuration = _configuration;
     }
-    [HttpPost("/register")]
+    [HttpPost("/register"), AllowAnonymous]
     public async Task<IActionResult> Register(UserRegisterRequest request)
     {
         try
@@ -51,9 +48,8 @@ public class UserController : ControllerBase
         }
 
     }
-    
-    [HttpPost("/login")]
-    [AllowAnonymous]
+
+    [HttpPost("/login"), AllowAnonymous]
     public async Task<IActionResult> Login(UserLoginRequest request)
     {
         try
@@ -85,7 +81,7 @@ public class UserController : ControllerBase
 
     //}
     
-    [HttpPost("/verify")]
+    [HttpPost("/verify"), AllowAnonymous]
     public async Task<IActionResult> Verify(string token)
     {
         try
@@ -98,7 +94,7 @@ public class UserController : ControllerBase
             return BadRequest("An error occured during the verification.");
         }
     }
-    [HttpPost("/forgotpassword")]
+    [HttpPost("/forgotpassword"), AllowAnonymous]
     public async Task<IActionResult> ForgotPassword(string email)
     {
         try
@@ -124,7 +120,7 @@ public class UserController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-    [HttpPost("/resetpassword")]
+    [HttpPost("/resetpassword"), AllowAnonymous]
     public async Task<IActionResult> ResetPassword(ResetPasswordRequest request)
     {
         try

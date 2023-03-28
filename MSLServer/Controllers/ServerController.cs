@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using MSLServer.Logic;
@@ -6,18 +7,17 @@ using System.IO;
 
 namespace MSLServer.Controllers;
 
-[ApiController]
-[Route("[controller]")]
+[ApiController, Route("[controller]"), Authorize]
 public class ServerController : ControllerBase
 {
     private IServerRepository serverRepository;
     private IServerThumbnailRepository thumbnailRepository;
     private IServerLogoRepository logoRepository;
-    private readonly ILogger<ServerController> _logger;
+    private readonly ILogger<ServerController> logger;
 
-    public ServerController(ILogger<ServerController> logger, IServerRepository serverRepository, IServerThumbnailRepository thumbnailRepository, IServerLogoRepository logoRepository)
+    public ServerController(ILogger<ServerController> _logger, IServerRepository serverRepository, IServerThumbnailRepository thumbnailRepository, IServerLogoRepository logoRepository)
     {
-        _logger = logger;
+        this.logger = _logger;
         this.serverRepository = serverRepository;
         this.thumbnailRepository = thumbnailRepository;
         this.logoRepository = logoRepository;
@@ -227,15 +227,6 @@ public class ServerController : ControllerBase
     public void Update(Server server)
     {
         serverRepository.Update(server);
-    }
-
-    [Route("/statusall")]
-    [HttpGet]
-    public IList<Server> ChectServerStatus()
-    {
-        var server = serverRepository.GetAll();
-        serverRepository.CheckSpecificServersStatus(server);
-        return server;
     }
 
     [Route("/status")]

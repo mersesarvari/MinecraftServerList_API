@@ -7,6 +7,7 @@ using MSLServer.Middlewares;
 using MSLServer.Models;
 using MSLServer.Models.Policy;
 using MSLServer.Services.EmailService;
+using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -62,11 +63,18 @@ builder.Services.AddAuthorization(configure =>
 });
 
 
-
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("oauth2", new Microsoft.OpenApi.Models.OpenApiSecurityScheme { 
+        Description="Standart authorization header using the bearer scheme (\"bearer {token}\")",
+        In=Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Name="Authorization",
+        Type=Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey
+    });
+    options.OperationFilter<SecurityRequirementsOperationFilter>();
+});
 
 var app = builder.Build();
 
@@ -76,13 +84,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseRouting();
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
-app.UseRouting();
+
 app.UseStaticFiles();
 app.UseCors();
 

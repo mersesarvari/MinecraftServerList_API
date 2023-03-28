@@ -4,6 +4,12 @@ using System.Text.Json.Serialization;
 
 namespace MSLServer.Models
 {
+    public enum Roles { 
+        User,
+        Vip,
+        Moderator,
+        Admin,           
+    }
     [Table("User")]
     public class User
     {
@@ -22,6 +28,7 @@ namespace MSLServer.Models
         public string? PasswordResetToken { get; set; }
         public DateTime? ResetTokenExpires { get; set; }
 
+        public Roles Role { get; set; }
 
 
         public string Password { get; set; }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MSLServer.Logic;
 using MSLServer.Models;
@@ -5,8 +6,7 @@ using MSLServer.Services.EmailService;
 
 namespace MSLServer.Controllers;
 
-[ApiController]
-[Route("[controller]")]
+[ApiController, Route("[controller]"), Authorize(Roles ="Admin")]
 public class AdminController : ControllerBase
 {
     private IUserRepository repository;

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MSLServer.Models
 {
@@ -44,9 +45,9 @@ namespace MSLServer.Models
         public string? LogoPath { get; set; }
 
         [NotMapped]
-        public byte[]? ThumbnailData { get; set; }
+        public FileStreamResult ThumbnailData { get; set; }
         [NotMapped]
-        public byte[]? LogoData { get; set; }
+        public FileStreamResult LogoData { get; set; }
         //public string Gamemode { get; set; }
         //public string Modt { get; set; }
         //public long Latency { get; set; }

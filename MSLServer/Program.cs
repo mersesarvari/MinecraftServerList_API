@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using MSLServer.Data;
 using MSLServer.Logic;
@@ -84,14 +85,19 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseRouting();
+
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
-app.UseStaticFiles();
-app.UseCors();
+app.UseStaticFiles(new StaticFileOptions { 
+    FileProvider = new PhysicalFileProvider(Path.GetFullPath(Resource.FileDirectory)),
+    RequestPath="/Files"
+});
+
 
 app.MapControllers();
 

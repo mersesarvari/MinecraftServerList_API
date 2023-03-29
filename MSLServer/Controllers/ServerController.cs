@@ -25,7 +25,9 @@ public class ServerController : ControllerBase
     [HttpGet]
     public IList<Server> GetAll()
     {
-        return serverRepository.GetAll();
+        var servers =  serverRepository.GetAll();
+        return servers;
+        
     }
     
     [HttpGet("{id}")]
@@ -166,8 +168,7 @@ public class ServerController : ControllerBase
         }
     }
 
-    [Route("/thumbnail")]
-    [HttpGet]
+    [Route("/thumbnail"), HttpGet, AllowAnonymous]
     public IActionResult GetThumbnail(string id)
     {
         
@@ -183,8 +184,7 @@ public class ServerController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-    [Route("/logo")]
-    [HttpGet]
+    [Route("/logo"), HttpGet, AllowAnonymous]
     public IActionResult GetLogo(string id)
     {
 

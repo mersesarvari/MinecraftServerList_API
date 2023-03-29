@@ -20,7 +20,7 @@ namespace MSLServer.Data.DBSeed
             {
                 new Server("ce5607a6-fae2-4232-8ecc-535ce64ee40a") {
                     Servername="Hypixel",
-                    
+
                     JavaIp="mc.hypixel.net",
                     JavaPort="25565",
                     BedrockIp="mc.hypixel.net",

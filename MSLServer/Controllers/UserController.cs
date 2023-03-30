@@ -75,7 +75,7 @@ public class UserController : ControllerBase
             string accessToken = Request.Headers[HeaderNames.Authorization];
             accessToken = accessToken.Split(" ")[1];
             var user = repository.GetByEmail(email);
-            var asd = JWTToken.GetIdTokenExpiry(accessToken, "email");
+            var asd = JWTToken.GetTokenValueByType(accessToken, "email");
             if (user.Email != asd)
             {
                 return Ok(false);

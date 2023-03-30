@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using MSLServer.Logic;
 using MSLServer.Models;
+using MSLServer.SecureServices;
 using System.IO;
 
 namespace MSLServer.Controllers;
@@ -11,18 +13,21 @@ namespace MSLServer.Controllers;
 public class ServerController : ControllerBase
 {
     private IServerRepository serverRepository;
+    private IUserRepository userRepository;
     private IServerThumbnailRepository thumbnailRepository;
     private IServerLogoRepository logoRepository;
     private readonly ILogger<ServerController> logger;
 
-    public ServerController(ILogger<ServerController> _logger, IServerRepository serverRepository, IServerThumbnailRepository thumbnailRepository, IServerLogoRepository logoRepository)
+    public ServerController(ILogger<ServerController> _logger, IServerRepository serverRepository, IServerThumbnailRepository thumbnailRepository, IServerLogoRepository logoRepository, IUserRepository _userRepository)
     {
         this.logger = _logger;
         this.serverRepository = serverRepository;
         this.thumbnailRepository = thumbnailRepository;
         this.logoRepository = logoRepository;
+        this.userRepository = _userRepository;
     }
     [HttpGet]
+    [AllowAnonymous]
     public IList<Server> GetAll()
     {
         var servers =  serverRepository.GetAll();
@@ -31,6 +36,7 @@ public class ServerController : ControllerBase
     }
     
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public Server Get(string id)
     {
         return serverRepository.GetById(id);
@@ -40,6 +46,11 @@ public class ServerController : ControllerBase
     {
         try
         {
+            string accessToken = Request.Headers[HeaderNames.Authorization];
+            accessToken = accessToken.Split(" ")[1];
+            var emailAddress = JWTToken.GetTokenValueByType(accessToken, "email");
+            var user = userRepository.GetByEmail(emailAddress);
+            server.Publisherid = user.Id;
             serverRepository.Insert(server);
             if (server.BedrockIp != "")
             {

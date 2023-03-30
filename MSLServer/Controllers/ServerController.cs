@@ -26,17 +26,23 @@ public class ServerController : ControllerBase
         this.logoRepository = logoRepository;
         this.userRepository = _userRepository;
     }
-    [HttpGet]
-    [AllowAnonymous]
+    [HttpGet, AllowAnonymous]
     public IList<Server> GetAll()
     {
         var servers =  serverRepository.GetAll();
         return servers;
         
     }
-    
-    [HttpGet("{id}")]
-    [AllowAnonymous]
+
+    [HttpGet, AllowAnonymous, Route("/premiumserver")]
+    public IList<Server> GetAllPremium()
+    {
+        var servers = serverRepository.GetPremiumServers();
+        return servers;
+
+    }
+
+    [HttpGet("{id}"), AllowAnonymous]
     public Server Get(string id)
     {
         return serverRepository.GetById(id);

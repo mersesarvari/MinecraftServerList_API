@@ -44,6 +44,9 @@ namespace MSLServer.Models
         public string? ThumbnailPath { get; set; }
         public string? LogoPath { get; set; }
 
+        public bool Premium { get; set; }
+        public DateTime? PremiumExpiration { get; set; }
+
         [NotMapped]
         public FileStreamResult ThumbnailData { get; set; }
         [NotMapped]

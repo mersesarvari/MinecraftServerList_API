@@ -29,6 +29,7 @@ namespace MSLServer.Data.DBSeed
                     ShortDescription="Short description",
                     LongDescription="This is the longer version of the description of the server. ",
                     Country="United States",
+                    Premium=true
                     
                     
                 },
@@ -43,6 +44,7 @@ namespace MSLServer.Data.DBSeed
                     ShortDescription="Short description",
                     LongDescription="This is the longer version of the description of the server. ",
                     Country="United States",
+                    Premium=true
                 },
                 new Server("81f58175-8e09-466c-8196-0dcb144de1a7") {
                     Servername="OPblocks",
@@ -55,6 +57,7 @@ namespace MSLServer.Data.DBSeed
                     ShortDescription="Short description",
                     LongDescription="This is the longer version of the description of the server. ",
                     Country="United States",
+                    Premium=false
                 },
                 new Server("8421e8d1-2e4e-4c07-a039-9bcd41a66b28") {
                     Servername="Manacube",
@@ -67,6 +70,7 @@ namespace MSLServer.Data.DBSeed
                     ShortDescription="Short description",
                     LongDescription="This is the longer version of the description of the server. ",
                     Country="United States",
+                    Premium=false
                 },
                 new Server("d17f9f98-d633-4ac6-8bc8-edc6ad7f37e1") {
                     Servername="Foundationcraft",
@@ -79,6 +83,7 @@ namespace MSLServer.Data.DBSeed
                     ShortDescription="Short description",
                     LongDescription="This is the longer version of the description of the server. ",
                     Country="United States",
+                    Premium=false
                 },
                 new Server("ab937e0d-2a17-42db-8847-455500d3c6ce") {
                     Servername="Crackedmc",
@@ -91,6 +96,7 @@ namespace MSLServer.Data.DBSeed
                     ShortDescription="Short description",
                     LongDescription="This is the longer version of the description of the server. ",
                     Country="United States",
+                    Premium=false
                 },
 
 

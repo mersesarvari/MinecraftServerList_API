@@ -42,7 +42,7 @@ namespace MSLServer.SecureServices
             return claims.Identity.Name;
         }
 
-        public static string GetIdTokenExpiry(string idtoken, string claimname)
+        public static string GetTokenValueByType(string idtoken, string claimname)
         {
             var token = new JwtSecurityToken(jwtEncodedString: idtoken);
             var asd = token.Claims;

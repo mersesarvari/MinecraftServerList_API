@@ -30,7 +30,7 @@ public class ServerController : ControllerBase
     public IList<Server> GetAll()
     {
         var servers =  serverRepository.GetAll();
-        return servers;
+        return servers.OrderByDescending(x => x.CurrentPlayers).ToList();
         
     }
 

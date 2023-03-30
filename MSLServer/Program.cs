@@ -32,7 +32,6 @@ builder.Services.AddSignalR();
 builder.Services.AddCors(options => options.AddDefaultPolicy(
     builder =>
     {
-
         builder.AllowAnyOrigin();
         builder.AllowAnyMethod();
         builder.AllowAnyHeader();
@@ -94,7 +93,7 @@ app.UseAuthorization();
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 app.UseStaticFiles(new StaticFileOptions { 
-    FileProvider = new PhysicalFileProvider(Path.GetFullPath(Resource.FileDirectory)),
+    FileProvider = new PhysicalFileProvider(Path.GetFullPath("E:\\Programing\\MSLProject\\Resources\\Files")),
     RequestPath="/Files"
 });
 

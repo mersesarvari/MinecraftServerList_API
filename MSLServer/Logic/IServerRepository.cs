@@ -11,6 +11,7 @@ namespace MSLServer.Logic
         void CheckSpecificServersStatus(IList<Server> servers);
         void Delete(string id);
         IList<Server> GetAll();
+        IList<Server> GetAllOnline();
         public IList<Server> GetPremiumServers();
         Server GetById(string id);
         Server GetByIp(string ipaddress);

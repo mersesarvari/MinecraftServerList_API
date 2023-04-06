@@ -25,10 +25,16 @@ namespace MSLServer.Logic
             var servers= context.Servers.ToList();
             return servers;
         }
+        public IList<Server> GetAllOnline()
+        {
+
+            var servers = context.Servers.Where(x => x.Status == true).ToList();
+            return servers;
+        }
         public IList<Server> GetPremiumServers()
         {
 
-            var servers = context.Servers.Where(x=>x.Premium==true).ToList();
+            var servers = context.Servers.Where(x=>x.Premium==true && x.Status==true).ToList();
             return servers;
         }
         public Server GetById(string id)

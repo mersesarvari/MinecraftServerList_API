@@ -29,7 +29,7 @@ public class ServerController : ControllerBase
     [HttpGet, AllowAnonymous]
     public IList<Server> GetAll()
     {
-        var servers =  serverRepository.GetAll();
+        var servers =  serverRepository.GetAllOnline();
         return servers.OrderByDescending(x => x.CurrentPlayers).ToList();
         
     }

@@ -48,6 +48,9 @@ public class ServerController : ControllerBase
         return serverRepository.GetById(id);
     }
     [HttpPost]
+
+
+
     public IActionResult Post([FromForm]CreateServerDTO server)
     {
         try
@@ -57,6 +60,8 @@ public class ServerController : ControllerBase
             var emailAddress = JWTToken.GetTokenValueByType(accessToken, "email");
             var user = userRepository.GetByEmail(emailAddress);
             server.Publisherid = user.Id;
+
+
             serverRepository.Insert(server);
             if (server.BedrockIp != "")
             {
@@ -234,16 +239,50 @@ public class ServerController : ControllerBase
     }
 
     [HttpDelete(Name = "DeleteServer")]
-    public void Delete(string id)
+    public IActionResult Delete(string id)
     {
-        serverRepository.Delete(id);
+        try
+        {
+            string token = Request.Headers[HeaderNames.Authorization];
+            var server = serverRepository.GetById(id);
+            if (userRepository.IsUserAthorized(token, server.Publisherid) == false)
+            {
+                throw new Exception("Unathorized");
+            }
+            serverRepository.Delete(id);
+            return Ok("User deleted succesfully");
+
+        }
+        catch (Exception ex)
+        {
+
+            return BadRequest(ex.Message);
+        }
+        
+
+        
     }
 
 
     [HttpPut(Name = "UpdateServer")]
-    public void Update(Server server)
+    public IActionResult Update(Server server)
     {
-        serverRepository.Update(server);
+        try
+        {
+            string token = Request.Headers[HeaderNames.Authorization];
+            var existingServer = serverRepository.GetById(server.Id);
+            if (userRepository.IsUserAthorized(token, existingServer.Publisherid) == false)
+            {
+                throw new Exception("Unathorized");
+            }
+            serverRepository.Update(server);
+            return Ok("Modify was succesfull");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        
     }
 
     [Route("/status")]

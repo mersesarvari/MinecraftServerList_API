@@ -17,5 +17,6 @@ namespace MSLServer.Logic
         Task ResetPassword(ResetPasswordRequest request);
         Task Update(User obj);
         Task VerifyUser(string token);
+        bool IsUserAthorized(string token, string id);
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Net.Http.Headers;
 using MSLServer.Data;
 using MSLServer.Models;
 using MSLServer.Models.User;
@@ -148,8 +149,6 @@ namespace MSLServer.Logic
             currentuser.ResetTokenExpires = null;
             await context.SaveChangesAsync();
         }
-
-
         public async Task Update(User obj)
         {
             var olduser = GetById(obj.Id);
@@ -169,5 +168,20 @@ namespace MSLServer.Logic
             context.Users.Remove(existing);
             context.SaveChangesAsync();
         }
+        public bool IsUserAthorized(string token, string id) {
+            token = token.Split(" ")[1];
+            var emailAddress = JWTToken.GetTokenValueByType(token, "email");
+            var user = GetById(id);
+            if (user == null)
+            {
+                return false;
+            }
+            if (user.Email != emailAddress)
+            {
+                return false;
+            }
+            return true;
+        }
+    
     }
 }

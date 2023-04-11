@@ -53,6 +53,7 @@ namespace MSLServer.Logic
         {
             try
             {
+
                 var newServer = new Server()
                 {
                     Publisherid = server.Publisherid,

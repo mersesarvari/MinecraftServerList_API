@@ -263,7 +263,6 @@ public class ServerController : ControllerBase
         
     }
 
-
     [HttpPut(Name = "UpdateServer")]
     public IActionResult Update(Server server)
     {

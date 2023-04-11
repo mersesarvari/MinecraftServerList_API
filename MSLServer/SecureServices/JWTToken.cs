@@ -14,6 +14,7 @@ namespace MSLServer.SecureServices
         {
             List<Claim> claims = new List<Claim>
             {
+                new Claim("id", user.Id),
                 new Claim("email", user.Email),
                 new Claim("role", user.Role.ToString()),
             };

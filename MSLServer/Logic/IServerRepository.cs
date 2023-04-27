@@ -1,4 +1,5 @@
 ﻿using MSLServer.Models;
+using MSLServer.Models.Server;
 
 namespace MSLServer.Logic
 {
@@ -18,6 +19,6 @@ namespace MSLServer.Logic
         IList<Server> GetByPlayerCount(int minplayers);
         IList<Server> GetByStatus();
         void Insert(CreateServerDTO server);
-        void Update(Server obj);
+        void Update(ServerDTO obj);
     }
 }

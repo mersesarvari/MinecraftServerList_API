@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Net.Http.Headers;
 using MSLServer.Logic;
 using MSLServer.Models;
+using MSLServer.Models.Server;
 using MSLServer.SecureServices;
 using System.IO;
+using System.Reflection;
 
 namespace MSLServer.Controllers;
 
@@ -48,9 +51,6 @@ public class ServerController : ControllerBase
         return serverRepository.GetById(id);
     }
     [HttpPost]
-
-
-
     public IActionResult Post([FromForm]CreateServerDTO server)
     {
         try
@@ -62,13 +62,13 @@ public class ServerController : ControllerBase
             server.Publisherid = user.Id;
 
 
-            serverRepository.Insert(server);
-            if (server.BedrockIp != "")
+            //Get the inserted server from the database. double check
+            if (server.BedrockIp != "" && server.BedrockIp != null)
             {
                 var s = serverRepository.GetByIp(server.BedrockIp);
                 serverRepository.CheckServerStatus(s);
             }
-            if (server.JavaIp != "")
+            if (server.JavaIp != null && server.JavaIp != "")
             {
                 var s = serverRepository.GetByIp(server.JavaIp);
                 serverRepository.CheckServerStatus(s);
@@ -80,11 +80,28 @@ public class ServerController : ControllerBase
 
             return BadRequest(ex.Message);
         }
-        
-
-        
     }
 
+    [HttpPut]
+    public IActionResult Update([FromForm] ServerDTO? server)
+    {
+        try
+        {
+            string token = Request.Headers[HeaderNames.Authorization];
+            var existingServer = serverRepository.GetById(server.Id);
+            if (userRepository.IsUserAthorized(token, existingServer.Publisherid) == false)
+            {
+                throw new Exception("Unathorized");
+            }
+            serverRepository.Update(server);
+            return Ok("Modify was succesfull");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
+    }
     [Route("/uploadthumbnail")]
     [HttpPost]
     public IActionResult PostThumbnail(IFormFile _file, string serverid)
@@ -263,26 +280,7 @@ public class ServerController : ControllerBase
         
     }
 
-    [HttpPut(Name = "UpdateServer")]
-    public IActionResult Update(Server server)
-    {
-        try
-        {
-            string token = Request.Headers[HeaderNames.Authorization];
-            var existingServer = serverRepository.GetById(server.Id);
-            if (userRepository.IsUserAthorized(token, existingServer.Publisherid) == false)
-            {
-                throw new Exception("Unathorized");
-            }
-            serverRepository.Update(server);
-            return Ok("Modify was succesfull");
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        
-    }
+    
 
     [Route("/status")]
     [HttpGet]

@@ -5,6 +5,7 @@ using System.Net;
 using MSLServer.Data.DBSeed;
 using MSLServer.Models;
 using MSLServer.Models.User;
+using MSLServer.Models.Server;
 
 namespace MSLServer.Data
 {

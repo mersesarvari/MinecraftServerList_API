@@ -4,6 +4,7 @@ using MSLServer.Data;
 using MSLServer.Models;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Diagnostics.Metrics;
+using MSLServer.Models.Server;
 
 namespace MSLServer.Logic
 {
@@ -53,22 +54,22 @@ namespace MSLServer.Logic
         {
             try
             {
-
+                
                 var newServer = new Server()
                 {
                     Publisherid = server.Publisherid,
                     Servername = server.Servername,
-                    JavaIp = server.JavaIp,
+                    JavaIp = server.JavaIp==null?server.JavaIp:"",
                     JavaPort = server.JavaPort,
-                    BedrockIp = server.BedrockIp,
+                    BedrockIp = server.BedrockIp == null ? server.BedrockIp : "",
                     BedrockPort = server.BedrockPort,
                     Country = server.Country,
 
                     ShortDescription = server.ShortDescription,
                     LongDescription = server.LongDescription,
-                    Youtube = server.Youtube,
-                    Discord = server.Discord,
-                    Website = server.Website
+                    Youtube = server.Youtube == null ? server.Youtube : "",
+                    Discord = server.Discord == null ? server.Discord : "",
+                    Website = server.Website == null ? server.Website : ""
 
                 };
                 //Set the server thumbnail
@@ -109,11 +110,69 @@ namespace MSLServer.Logic
             
 
         }
-        public void Update(Server obj)
+        public void Update(ServerDTO obj)
         {
             
             var old = GetById(obj.Id);
-            old = obj;
+            old.Servername = obj.Servername;
+            if (obj.BedrockIp == null)
+            {
+                old.BedrockIp = "";
+                old.BedrockIp = "";
+            
+            }
+            else {
+                old.BedrockIp = obj.BedrockIp;
+                old.BedrockPort = obj.BedrockPort;
+            }
+            if (obj.JavaIp == null)
+            {
+                old.JavaIp = "";
+                old.JavaPort = "";
+
+            }
+            else
+            {
+                old.JavaIp = obj.JavaIp;
+                old.JavaPort = obj.JavaPort;
+            }    
+            old.Country = obj.Country;
+            old.ShortDescription = obj.ShortDescription;
+            old.LongDescription = obj.LongDescription;
+
+            //Set the server thumbnail
+            if (obj.Thumbnail != null)
+            {
+                string thumbnailPath = Path.Combine(Resource.thumbnailDirectory, obj.Id + Path.GetExtension(obj.Thumbnail.FileName));
+                using (Stream fileStream = new FileStream(thumbnailPath, FileMode.Append))
+                {
+                    obj.Thumbnail.CopyToAsync(fileStream);
+                    var extension = Path.GetExtension(thumbnailPath);
+                    var filename = obj.Id + extension;
+
+                    var newThumbnail = new ServerThumbnail() { Name = obj.Id, FullName = filename, Extension = extension, ServerId = obj.Id };
+                    old.ThumbnailPath = newThumbnail.FullName;
+                    thumbnailRepository.Create(newThumbnail);
+                }
+            }
+            if(obj.Logo != null)
+            {
+                //Set the server Logo
+                string logoPath = Path.Combine(Resource.logoDirectory, old.Id + Path.GetExtension(obj.Logo.FileName));
+                using (Stream fileStream = new FileStream(logoPath, FileMode.Append))
+                {
+                    obj.Logo.CopyToAsync(fileStream);
+                    var extension = Path.GetExtension(logoPath);
+                    var filename = old.Id + extension;
+
+                    var newLogo = new ServerLogo() { Name = old.Id, FullName = filename, Extension = extension, ServerId = old.Id };
+                    old.LogoPath = newLogo.FullName;
+                    logoRepository.Create(newLogo);
+                }
+            }
+            old.Discord = obj.Discord;
+            old.Youtube = obj.Youtube;
+            old.Website = obj.Website;
             context.SaveChanges();
         }
         public void Delete(string id)

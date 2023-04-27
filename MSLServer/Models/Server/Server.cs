@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MSLServer.Models
+namespace MSLServer.Models.Server
 {
     [Table("Server")]
     public class Server
@@ -17,24 +17,20 @@ namespace MSLServer.Models
         #region ServerDetails
         [Required]
         public string Servername { get; set; }
-        [Required]
-        public string? JavaIp { get; set; }
-        [Required]
-        public string? JavaPort { get; set; }
-        [Required]
-        public string? BedrockIp { get; set; }
-        [Required]
-        public string? BedrockPort { get; set; }
+        public string? JavaIp { get; set; } = "";
+        public string? JavaPort { get; set; } = "";
+        public string? BedrockIp { get; set; } = "";
+        public string? BedrockPort { get; set; } = "";
         #endregion
         #region Social
-        public string? Youtube { get; set; }
-        public string? Discord { get; set; }
-        public string? Website { get; set; }
+        public string? Youtube { get; set; } = "";
+        public string? Discord { get; set; } = "";
+        public string? Website { get; set; } = "";
         #endregion
         [Required]
-        public string? Country { get; set; }
+        public string? Country { get; set; } = "";
         [Required]
-        public string? ShortDescription { get; set; }
+        public string? ShortDescription { get; set; } = "";
         [Required]
         public string? LongDescription { get; set; }
         public bool Status { get; set; }
@@ -63,21 +59,21 @@ namespace MSLServer.Models
             //Servername = string.Empty;
             //ServerVersion = string.Empty;
 
-            
+
             Registration = DateTime.Now.ToString();
-            ThumbnailPath = this.Id + ".mp4";
-            LogoPath = this.Id + ".webp";
+            ThumbnailPath = Id + ".mp4";
+            LogoPath = Id + ".webp";
         }
         public Server(string id)
         {
-            this.Id = id;
+            Id = id;
             Servername = string.Empty;
             ServerVersion = string.Empty;
 
 
             Registration = DateTime.Now.ToString();
-            ThumbnailPath = this.Id + ".mp4";
-            LogoPath = this.Id + ".webp";
+            ThumbnailPath = Id + ".mp4";
+            LogoPath = Id + ".webp";
         }
     }
 }

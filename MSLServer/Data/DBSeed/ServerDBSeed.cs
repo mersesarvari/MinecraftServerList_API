@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MSLServer.Models;
+using MSLServer.Models.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;

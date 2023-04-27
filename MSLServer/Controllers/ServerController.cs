@@ -32,7 +32,8 @@ public class ServerController : ControllerBase
     [HttpGet, AllowAnonymous]
     public IList<Server> GetAll()
     {
-        var servers =  serverRepository.GetAllOnline();
+        //var servers =  serverRepository.GetAllOnline();
+        var servers = serverRepository.GetAll();
         return servers.OrderByDescending(x => x.CurrentPlayers).ToList();
         
     }
@@ -55,13 +56,43 @@ public class ServerController : ControllerBase
     {
         try
         {
+            //Have to validate optional fields because in javascript the value is null
+            if (server.JavaIp == null && server.BedrockIp == null)
+            {
+                throw new Exception("You cannot create a server without a valid ip address");
+            }
+            if (server.JavaIp == null)
+            {
+                server.JavaIp = "";
+                server.JavaPort="";
+            }
+            if (server.BedrockIp == null)
+            {
+                server.BedrockPort = "";
+                server.BedrockIp = "";
+            }
+            if (server.Youtube == null)
+            {
+                server.Youtube = "";
+            }
+            if (server.Discord == null)
+            {
+                server.Discord = "";
+            }
+            if (server.Website == null)
+            {
+                server.Website = "";
+            }
+            
+
+
             string accessToken = Request.Headers[HeaderNames.Authorization];
             accessToken = accessToken.Split(" ")[1];
             var emailAddress = JWTToken.GetTokenValueByType(accessToken, "email");
             var user = userRepository.GetByEmail(emailAddress);
             server.Publisherid = user.Id;
 
-
+            serverRepository.Insert(server);
             //Get the inserted server from the database. double check
             if (server.BedrockIp != "" && server.BedrockIp != null)
             {
@@ -73,6 +104,7 @@ public class ServerController : ControllerBase
                 var s = serverRepository.GetByIp(server.JavaIp);
                 serverRepository.CheckServerStatus(s);
             }
+            
             return Ok("Server created succesfully");
         }
         catch (Exception ex)

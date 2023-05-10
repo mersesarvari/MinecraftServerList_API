@@ -144,7 +144,7 @@ namespace MSLServer.Logic
             if (obj.Thumbnail != null)
             {
                 string thumbnailPath = Path.Combine(Resource.thumbnailDirectory, obj.Id + Path.GetExtension(obj.Thumbnail.FileName));
-                using (Stream fileStream = new FileStream(thumbnailPath, FileMode.Append))
+                using (Stream fileStream = new FileStream(thumbnailPath, FileMode.Create))
                 {
                     obj.Thumbnail.CopyToAsync(fileStream);
                     var extension = Path.GetExtension(thumbnailPath);
@@ -159,7 +159,7 @@ namespace MSLServer.Logic
             {
                 //Set the server Logo
                 string logoPath = Path.Combine(Resource.logoDirectory, old.Id + Path.GetExtension(obj.Logo.FileName));
-                using (Stream fileStream = new FileStream(logoPath, FileMode.Append))
+                using (Stream fileStream = new FileStream(logoPath, FileMode.Create))
                 {
                     obj.Logo.CopyToAsync(fileStream);
                     var extension = Path.GetExtension(logoPath);
@@ -203,7 +203,7 @@ namespace MSLServer.Logic
         public void CheckServerStatus(Server server)
         {
             
-            if (server.BedrockIp != "")
+            if (server.BedrockIp != "" && server.BedrockIp != null)
             {
                 var current = GetByIp(server.BedrockIp);
                 MineStat ms = new MineStat(server.BedrockIp, ushort.Parse(server.BedrockPort), 2, SlpProtocol.Json);
@@ -219,7 +219,7 @@ namespace MSLServer.Logic
                     current.Status = false;
                 }
             }
-            if (server.JavaIp != "")
+            if (server.JavaIp != "" && server.JavaIp != null)
             {
                 var current = GetByIp(server.JavaIp);
                 MineStat ms = new MineStat(server.JavaIp, ushort.Parse(server.JavaPort), 2, SlpProtocol.Json);

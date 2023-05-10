@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using MSLServer.Data;
 using MSLServer.Models;
+using Newtonsoft.Json.Serialization;
 
 namespace MSLServer.Logic
 {
@@ -41,9 +42,22 @@ namespace MSLServer.Logic
 
         public void Delete(string id)
         {
-            var currentserver = db.Servers.FirstOrDefault(x => x.Id == id);
-            currentserver.ThumbnailPath = string.Empty;
+            var thumbnail = db.ServerThumbnails.FirstOrDefault(x => x.Id == id);
+            var server = db.Servers.FirstOrDefault(x => x.ThumbnailId == id);
+            File.Delete();
+            server.ThumbnailId = string.Empty;
+            server.ThumbnailPath = string.Empty;
+            
             db.ServerThumbnails.Remove(ReadByServerId(id));
+            db.SaveChanges();
+        }
+        public void DeleteByServer(string serverid)
+        {
+            var server = db.Servers.FirstOrDefault(x => x.Id == serverid);
+            var thumbnail = db.ServerThumbnails.FirstOrDefault(x => x.Id == server.ThumbnailId);
+            db.ServerThumbnails.Remove(thumbnail);
+            server.ThumbnailId = string.Empty;
+            server.ThumbnailPath = string.Empty;
             db.SaveChanges();
         }
         public ServerThumbnail Read(string id)

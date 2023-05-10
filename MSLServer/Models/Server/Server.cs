@@ -37,19 +37,15 @@ namespace MSLServer.Models.Server
         public int CurrentPlayers { get; set; }
         public int MaxPlayer { get; set; }
         public string? ServerVersion { get; set; }
-        public string? ThumbnailPath { get; set; }
-        public string? LogoPath { get; set; }
+        
 
         public bool Premium { get; set; }
         public DateTime? PremiumExpiration { get; set; }
 
-        [NotMapped]
-        public FileStreamResult ThumbnailData { get; set; }
-        [NotMapped]
-        public FileStreamResult LogoData { get; set; }
-        //public string Gamemode { get; set; }
-        //public string Modt { get; set; }
-        //public long Latency { get; set; }
+        public string? ThumbnailPath { get; set; }
+        public string? LogoPath { get; set; }
+        public string? ThumbnailId { get; set; }
+        public string? LogoId { get; set; }
 
 
 

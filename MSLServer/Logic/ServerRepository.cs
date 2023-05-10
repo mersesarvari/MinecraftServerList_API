@@ -13,12 +13,14 @@ namespace MSLServer.Logic
         ServerListDBContext context;
         IServerThumbnailRepository thumbnailRepository;
         IServerLogoRepository logoRepository;
+        IFileManager fileManager;
 
-        public ServerRepository(ServerListDBContext _context, IServerThumbnailRepository thumbnailRepository, IServerLogoRepository logoRepository)
+        public ServerRepository(ServerListDBContext _context, IServerThumbnailRepository thumbnailRepository, IServerLogoRepository logoRepository, IFileManager fileManager)
         {
             context = _context;
             this.thumbnailRepository = thumbnailRepository;
             this.logoRepository = logoRepository;
+            this.fileManager = fileManager;
         }
         public IList<Server> GetAll()
         {
@@ -73,30 +75,7 @@ namespace MSLServer.Logic
 
                 };
                 //Set the server thumbnail
-                string thumbnailPath = Path.Combine(Resource.thumbnailDirectory, newServer.Id + Path.GetExtension(server.Thumbnail.FileName));
-                using (Stream fileStream = new FileStream(thumbnailPath, FileMode.Create))
-                {
-                    server.Thumbnail.CopyToAsync(fileStream);
-                    var extension = Path.GetExtension(thumbnailPath);
-                    var filename = newServer.Id + extension;
-
-                    var newThumbnail = new ServerThumbnail() { Name = newServer.Id, FullName = filename, Extension = extension, ServerId = newServer.Id };
-                    newServer.ThumbnailPath = newThumbnail.FullName;
-                    thumbnailRepository.Create(newThumbnail);
-                }
-
-                //Set the server Logo
-                string logoPath = Path.Combine(Resource.logoDirectory, newServer.Id + Path.GetExtension(server.Logo.FileName));
-                using (Stream fileStream = new FileStream(logoPath, FileMode.Create))
-                {
-                    server.Logo.CopyToAsync(fileStream);
-                    var extension = Path.GetExtension(logoPath);
-                    var filename = newServer.Id + extension;
-
-                    var newLogo = new ServerLogo() { Name = newServer.Id, FullName = filename, Extension = extension, ServerId = newServer.Id };
-                    newServer.LogoPath = newLogo.FullName;
-                    logoRepository.Create(newLogo);
-                }
+                fileManager.CreateThumbnail(newServer, server);
                 
                 //Scecking server status and if the server is valid
                 context.Servers.Add(newServer);
@@ -141,35 +120,8 @@ namespace MSLServer.Logic
             old.LongDescription = obj.LongDescription;
 
             //Set the server thumbnail
-            if (obj.Thumbnail != null)
-            {
-                string thumbnailPath = Path.Combine(Resource.thumbnailDirectory, obj.Id + Path.GetExtension(obj.Thumbnail.FileName));
-                using (Stream fileStream = new FileStream(thumbnailPath, FileMode.Create))
-                {
-                    obj.Thumbnail.CopyToAsync(fileStream);
-                    var extension = Path.GetExtension(thumbnailPath);
-                    var filename = obj.Id + extension;
+            fileManager.ModifyThumbnail(old, obj);
 
-                    var newThumbnail = new ServerThumbnail() { Name = obj.Id, FullName = filename, Extension = extension, ServerId = obj.Id };
-                    old.ThumbnailPath = newThumbnail.FullName;
-                    thumbnailRepository.Create(newThumbnail);
-                }
-            }
-            if(obj.Logo != null)
-            {
-                //Set the server Logo
-                string logoPath = Path.Combine(Resource.logoDirectory, old.Id + Path.GetExtension(obj.Logo.FileName));
-                using (Stream fileStream = new FileStream(logoPath, FileMode.Create))
-                {
-                    obj.Logo.CopyToAsync(fileStream);
-                    var extension = Path.GetExtension(logoPath);
-                    var filename = old.Id + extension;
-
-                    var newLogo = new ServerLogo() { Name = old.Id, FullName = filename, Extension = extension, ServerId = old.Id };
-                    old.LogoPath = newLogo.FullName;
-                    logoRepository.Create(newLogo);
-                }
-            }
             old.Discord = obj.Discord;
             old.Youtube = obj.Youtube;
             old.Website = obj.Website;
@@ -178,6 +130,7 @@ namespace MSLServer.Logic
         public void Delete(string id)
         {
             Server old = context.Servers.Find(id);
+            thumbnailRepository.Delete(id);
             context.Servers.Remove(old);
             context.SaveChanges();
         }

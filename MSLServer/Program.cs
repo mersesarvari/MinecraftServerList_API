@@ -91,10 +91,16 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
-app.UseStaticFiles(new StaticFileOptions { 
+app.UseStaticFiles(new StaticFileOptions {
+    OnPrepareResponse = context =>
+    {
+        context.Context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
+        context.Context.Response.Headers.Add("Expires", "-1");
+    },
     FileProvider = new PhysicalFileProvider(Path.GetFullPath("E:\\Programing\\MSLProject\\Resources\\Files")),
     RequestPath="/Files"
 });
+
 
 
 app.MapControllers();

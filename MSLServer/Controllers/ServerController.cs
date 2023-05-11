@@ -17,16 +17,12 @@ public class ServerController : ControllerBase
 {
     private IServerRepository serverRepository;
     private IUserRepository userRepository;
-    private IServerThumbnailRepository thumbnailRepository;
-    private IServerLogoRepository logoRepository;
     private readonly ILogger<ServerController> logger;
 
-    public ServerController(ILogger<ServerController> _logger, IServerRepository serverRepository, IServerThumbnailRepository thumbnailRepository, IServerLogoRepository logoRepository, IUserRepository _userRepository)
+    public ServerController(ILogger<ServerController> _logger, IServerRepository serverRepository, IUserRepository _userRepository)
     {
         this.logger = _logger;
         this.serverRepository = serverRepository;
-        this.thumbnailRepository = thumbnailRepository;
-        this.logoRepository = logoRepository;
         this.userRepository = _userRepository;
     }
     [HttpGet, AllowAnonymous]
@@ -138,24 +134,7 @@ public class ServerController : ControllerBase
     [HttpPost]
     public IActionResult PostThumbnail(IFormFile _file, string serverid)
     {
-        try
-        {
-            string filePath = Path.Combine(Resource.thumbnailDirectory, serverid + Path.GetExtension(_file.FileName));
-            using (Stream fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                _file.CopyToAsync(fileStream);
-                var extension = Path.GetExtension(filePath);
-                var filename = serverid + extension;
-                thumbnailRepository.Create(new ServerThumbnail() { Name = serverid, FullName = filename, Extension = extension, ServerId = serverid });
-            }
-
-            return Ok();
-        }
-        catch (Exception ex)
-        {
-
-            return BadRequest(ex.Message);
-        }
+        throw new NotImplementedException("This method is not implemented yet!");
     }
 
     [Route("/uploadlogo")]
@@ -170,7 +149,6 @@ public class ServerController : ControllerBase
                 _file.CopyToAsync(fileStream);
                 var extension = Path.GetExtension(filePath);
                 var filename = serverid + extension;
-                logoRepository.Create(new ServerLogo() { Name = serverid, FullName = filename, Extension = extension, ServerId = serverid });
             }
 
             return Ok();
@@ -186,57 +164,15 @@ public class ServerController : ControllerBase
     [HttpDelete]
     public IActionResult DeleteThumbnail(string serverid)
     {
-        try
-        {
-            var currentfile = thumbnailRepository.ReadByServerId(serverid);
-            if (System.IO.File.Exists(Resource.thumbnailDirectory + currentfile.FullName))
-            {
-                System.IO.File.Delete(Resource.thumbnailDirectory + currentfile.FullName);
-                thumbnailRepository.Delete(currentfile.Name);
-            }
-            return Ok();
-        }
-        catch (Exception ex)
-        {
+        throw new NotImplementedException("Not implemented");
 
-            return BadRequest(ex.Message);
-        }
     }
 
     [Route("/deletelogo")]
     [HttpDelete]
     public IActionResult Deletelogo(string serverid)
     {
-        try
-        {
-            var currentfile = logoRepository.ReadByServerId(serverid);
-            if (System.IO.File.Exists(Resource.logoDirectory + currentfile.FullName))
-            {
-                System.IO.File.Delete(Resource.logoDirectory + currentfile.FullName);
-                logoRepository.Delete(currentfile.Name);
-            }
-            return Ok();
-        }
-        catch (Exception ex)
-        {
-
-            return BadRequest(ex.Message);
-        }
-    }
-
-    [Route("/getthumbnaildata")]
-    [HttpGet]
-    public IList<ServerThumbnail> GetThumbnails()
-    {
-        try
-        {
-            return thumbnailRepository.ReadAll();
-        }
-        catch (Exception ex)
-        {
-
-            throw new Exception(ex.Message);
-        }
+        throw new NotImplementedException("This method is not implemented yet!");
     }
 
     [Route("/thumbnail"), HttpGet, AllowAnonymous]
@@ -272,20 +208,6 @@ public class ServerController : ControllerBase
         }
     }
 
-    [Route("/getlogodata")]
-    [HttpGet]
-    public IList<ServerLogo> GetLogoData()
-    {
-        try
-        {
-            return logoRepository.ReadAll();
-        }
-        catch (Exception ex)
-        {
-
-            throw new Exception(ex.Message);
-        }
-    }
 
     [HttpDelete(Name = "DeleteServer")]
     public IActionResult Delete(string id)

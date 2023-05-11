@@ -14,8 +14,6 @@ namespace MSLServer.Data
         #region DBSets
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Server> Servers { get; set; }
-        public virtual DbSet<ServerThumbnail> ServerThumbnails { get; set; }
-        public virtual DbSet<ServerLogo> ServerLogos { get; set; }
         #endregion
         public ServerListDBContext()
         {

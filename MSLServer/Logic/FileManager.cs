@@ -1,18 +1,15 @@
 ﻿using MSLServer.Models.Server;
 using MSLServer.Models;
 using System.Security.Cryptography;
+using Org.BouncyCastle.Crypto.Tls;
 
 namespace MSLServer.Logic
 {
 
     public class FileManager : IFileManager
     {
-        IServerThumbnailRepository thumbnailRepository;
-        IServerLogoRepository logoRepository;
-        public FileManager(IServerThumbnailRepository thumbnailRepository, IServerLogoRepository logoRepository)
+        public FileManager()
         {
-            this.thumbnailRepository = thumbnailRepository;
-            this.logoRepository = logoRepository;
         }
 
         public void CreateThumbnail(Server server, CreateServerDTO serverDTO)
@@ -24,9 +21,7 @@ namespace MSLServer.Logic
                 var extension = Path.GetExtension(thumbnailPath);
                 var filename = server.Id + extension;
 
-                var newThumbnail = new ServerThumbnail() { Name = server.Id, FullName = filename, Extension = extension, ServerId = server.Id };
-                server.ThumbnailPath = newThumbnail.FullName;
-                thumbnailRepository.Create(newThumbnail);
+                server.ThumbnailPath = filename;
             }
 
             //Set the server Logo
@@ -37,13 +32,11 @@ namespace MSLServer.Logic
                 var extension = Path.GetExtension(logoPath);
                 var filename = server.Id + extension;
 
-                var newLogo = new ServerLogo() { Name = server.Id, FullName = filename, Extension = extension, ServerId = server.Id };
-                server.LogoPath = newLogo.FullName;
-                logoRepository.Create(newLogo);
+                server.LogoPath = filename;
             }
         }
 
-        public void ModifyThumbnail(Server server, CreateServerDTO serverDTO)
+        public void ModifyThumbnail(Server server ,ServerDTO serverDTO)
         {
             if (serverDTO.Thumbnail != null)
             {
@@ -54,9 +47,7 @@ namespace MSLServer.Logic
                     var extension = Path.GetExtension(thumbnailPath);
                     var filename = server.Id + extension;
 
-                    var newThumbnail = new ServerThumbnail() { Name = server.Id, FullName = filename, Extension = extension, ServerId = server.Id };
-                    server.ThumbnailPath = newThumbnail.FullName;
-                    thumbnailRepository.Create(newThumbnail);
+                    server.ThumbnailPath = filename;
                 }
             }
             if (serverDTO.Logo != null)
@@ -69,9 +60,24 @@ namespace MSLServer.Logic
                     var extension = Path.GetExtension(logoPath);
                     var filename = server.Id + extension;
 
-                    var newLogo = new ServerLogo() { Name = server.Id, FullName = filename, Extension = extension, ServerId = server.Id };
-                    server.LogoPath = newLogo.FullName;
-                    logoRepository.Create(newLogo);
+                    server.LogoPath = filename;
+                }
+            }
+        }
+        
+        public void DeleteFile(Server server, FileType type) {
+            if (type == FileType.thumbnail)
+            {
+                if (File.Exists(server.ThumbnailPath))
+                {
+                    File.Delete(server.ThumbnailPath);
+                }
+            }
+            if (type == FileType.logo)
+            {
+                if (File.Exists(server.LogoPath))
+                {
+                    File.Delete(server.LogoPath);
                 }
             }
         }

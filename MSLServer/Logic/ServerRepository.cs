@@ -11,15 +11,11 @@ namespace MSLServer.Logic
     public class ServerRepository : IServerRepository
     {
         ServerListDBContext context;
-        IServerThumbnailRepository thumbnailRepository;
-        IServerLogoRepository logoRepository;
         IFileManager fileManager;
 
-        public ServerRepository(ServerListDBContext _context, IServerThumbnailRepository thumbnailRepository, IServerLogoRepository logoRepository, IFileManager fileManager)
+        public ServerRepository(ServerListDBContext _context, IFileManager fileManager)
         {
             context = _context;
-            this.thumbnailRepository = thumbnailRepository;
-            this.logoRepository = logoRepository;
             this.fileManager = fileManager;
         }
         public IList<Server> GetAll()
@@ -130,16 +126,14 @@ namespace MSLServer.Logic
         public void Delete(string id)
         {
             Server old = context.Servers.Find(id);
-            thumbnailRepository.Delete(id);
+            fileManager.DeleteFile(old, FileType.thumbnail);
+            fileManager.DeleteFile(old, FileType.logo);
             context.Servers.Remove(old);
             context.SaveChanges();
         }
         public void AddThumbnail(string id)
         {
-            var currentThumbnail = context.ServerThumbnails.FirstOrDefault(x => x.Name == id);
-            var current = GetAll().FirstOrDefault(x => x.Id == id);
-            current.ThumbnailPath = Resource.FilePath + currentThumbnail.FullName;
-            context.SaveChanges();
+            throw new NotImplementedException();
         }
         public Server GetByIp(string ipaddress)
         {
